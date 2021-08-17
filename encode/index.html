@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <title>Universal Online Encoder / Decoder | AP2cu.com tools</title>    
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <script src="/js/encode.js"></script>
+        <link rel="stylesheet" href="/css/encode.css"/>
+        <script async src="https://www.googletagmanager.com/gtag/js?id=UA-8182789-1"></script>
+        <script>
+        window.dataLayer = window.dataLayer || []; function gtag(){dataLayer.push(arguments);}gtag('js', new Date());gtag('config', 'UA-8182789-1');
+        </script>
+        <link rel="apple-touch-icon" sizes="180x180" href="/img/apple-touch-icon.png">
+        <link rel="icon" type="image/png" sizes="32x32" href="/img/favicon-32x32.png">
+        <link rel="icon" type="image/png" sizes="16x16" href="/img/favicon-16x16.png">
+        <link rel="manifest" href="/img/site.webmanifest">
+        <link rel="mask-icon" href="/img/safari-pinned-tab.svg" color="#cd0000">
+        <link rel="shortcut icon" href="/img/favicon.ico">
+        <meta name="msapplication-TileColor" content="#000000">
+        <meta name="msapplication-config" content="/img/browserconfig.xml">
+        <meta name="theme-color" content="#ffffff">
+    </head>
+    <body>
+        <h1>Online Encoder / Decoder</h1>
+        <form>
+            <div class="full-row">
+                <input type="text" id="charsIgnored" name="charsIgnored" value="?&:./ -+=\w"/>
+                <input type="checkbox" id="ignore" name="ignore"/>
+                <label for="ignore">Ignore characters for URL, HTML Entities and Unicode</label>
+            </div>
+            <div class="item">
+              <label for="decoded"></label>
+              <textarea id="decoded" placeholder="Decoded text"></textarea>
+            </div>
+            <div class="item">
+                <label for="urlencoded"></label>
+                <textarea id="urlencoded" placeholder="URL Encoded text"></textarea>
+            </div>
+            <div class="item">
+                <label for="byteencoded"></label>
+                <textarea id="byteencoded" placeholder="Code Point Encoded text"></textarea>
+            </div>
+            <div class="item">
+                <label for="htmlentitiesencoded"></label>
+                <textarea id="htmlentitiesencoded" placeholder="HTML Entities Encoded text"></textarea>
+            </div>
+            <div class="item">
+                <label for="unicodeencoded"></label>
+                <textarea id="unicodeencoded" placeholder="Unicode Encoded text"></textarea>
+            </div>
+            <div class="item">
+                <label for="base64encoded"></label>
+                <textarea id="base64encoded" placeholder="Base64 Encoded text"></textarea>
+            </div>
+            <div class="item">
+                <label for="sha1encoded"></label>
+                <textarea id="sha1encoded" placeholder="SHA-1 Encoded text" disabled="disabled"></textarea>
+            </div>
+            <div class="item">
+                <label for="sha256encoded"></label>
+                <textarea id="sha256encoded" placeholder="SHA-256 Encoded text" disabled="disabled"></textarea>
+            </div>
+            <div class="item">
+                <label for="md5encoded"></label>
+                <textarea id="md5encoded" placeholder="MD5 Encoded text" disabled="disabled"></textarea>
+            </div>
+        </form>
+    </body>
+</html>
