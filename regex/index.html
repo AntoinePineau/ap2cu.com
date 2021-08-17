@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <title>Online Regular Expressions | AP2cu.com tools</title>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <script src="/js/regex.js"></script>
+        <link rel="stylesheet" href="/css/regex.css"/>
+        <script async src="https://www.googletagmanager.com/gtag/js?id=UA-8182789-1"></script>
+        <script>
+        window.dataLayer = window.dataLayer || []; function gtag(){dataLayer.push(arguments);}gtag('js', new Date());gtag('config', 'UA-8182789-1');
+        </script>
+        <link rel="apple-touch-icon" sizes="180x180" href="/img/apple-touch-icon.png">
+        <link rel="icon" type="image/png" sizes="32x32" href="/img/favicon-32x32.png">
+        <link rel="icon" type="image/png" sizes="16x16" href="/img/favicon-16x16.png">
+        <link rel="manifest" href="/img/site.webmanifest">
+        <link rel="mask-icon" href="/img/safari-pinned-tab.svg" color="#cd0000">
+        <link rel="shortcut icon" href="/img/favicon.ico">
+        <meta name="msapplication-TileColor" content="#000000">
+        <meta name="msapplication-config" content="/img/browserconfig.xml">
+        <meta name="theme-color" content="#ffffff">
+    </head>
+    <body>
+        <h1>Online Regular Expressions</h1>
+        <form>
+            <div class="full-row">
+                <a href="/regex/tips/">Lessons and tips</a> <span class="sep">&#1421;</span> <a href="/regex/cheat-sheet/">Cheat Sheet</a>
+            </div>
+            <div class="item">
+              <label for="regex"></label>
+              <textarea id="regex" placeholder="Regular Expression"></textarea>
+            </div>
+            <div class="item">
+                <label for="flags"></label>
+                <datalist id="flagslist">
+                    <option value="g">global &#8801; Don't return after first match</option>
+                    <option value="m">multi line &#8801; ^ and $ match start/end of line</option>
+                    <option value="i">insensitive &#8801; Case insensitive match</option>
+                    <option value="x">extended &#8801; Ignore whitespace</option>
+                    <option value="s">single line &#8801; Dot matches newline</option>
+                    <option value="u">unicode &#8801; Match with full unicode</option>
+                    <option value="U">Ungreedy &#8801; Make quantifiers lazy</option>
+                    <option value="A">Anchored &#8801; Anchor to start of pattern, or at the end of the most recent match</option>
+                    <option value="J">J &#8801; Allow duplicate subpattern names</option>
+                    <option value="D">Dollar end only &#8801; $ matches only end of pattern</option>
+                </datalist>
+                <input id="flags" placeholder="Flags" list="flagslist" size="20" type="text" />
+            </div>
+            <div class="item">
+                <label for="replacement"></label>
+                <textarea id="replacement" placeholder="Replacement rule"></textarea>
+            </div>
+            <div class="item template hidden">
+                <label for="text-#"></label>
+                <textarea id="text-#" placeholder="Text to match / substitute"></textarea>
+            </div>
+        </form>
+    </body>
+</html>

@@ -1,0 +1,36 @@
+:root {
+    --color: rgba(205, 0, 0, 1);
+    --black: rgba(0, 0, 0, .8);
+}
+body {
+    font-family: Verdana, Geneva, Tahoma, sans-serif;
+}
+h1 {
+    margin-bottom: 20px;
+    color: var(--color);
+    text-align: center;
+}
+a, a:visited {
+    color: var(--black);
+    text-decoration: none;
+}
+a:hover {
+    color: var(--color);
+}
+@keyframes rotate360 {
+    to { transform: rotate(360deg); }
+}
+.sep {
+    animation: 2s rotate360 infinite linear;
+}
+.full-row {
+    width: 80%;
+    text-align: center;
+    border-bottom: solid 3px var(--color);
+    padding-bottom: 25px;
+    margin: 0 10% 10px;
+}
+@media (min-width:601px) {
+}
+@media (min-width:769px) {
+}
