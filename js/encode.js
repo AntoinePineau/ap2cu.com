@@ -21,6 +21,7 @@ function update(id, textarea) {
       htmlentitiesencode(decodedText);
       unicodeencode(decodedText);
       byteencode(decodedText);
+      hexencode(decodedText);
       document.querySelector('#sha1encoded').value = SHA1(decodedText);
       document.querySelector('#sha256encoded').value = sha256(decodedText);
       document.querySelector('#md5encoded').value = md5(decodedText);
@@ -31,6 +32,7 @@ function update(id, textarea) {
       htmlentitiesencode(decodedText);
       unicodeencode(decodedText);
       byteencode(decodedText);
+      hexencode(decodedText);
       document.querySelector('#sha1encoded').value = SHA1(decodedText);
       document.querySelector('#sha256encoded').value = sha256(decodedText);
       document.querySelector('#md5encoded').value = md5(decodedText);
@@ -41,6 +43,7 @@ function update(id, textarea) {
       htmlentitiesencode(decodedText);
       unicodeencode(decodedText);
       byteencode(decodedText);
+      hexencode(decodedText);
       document.querySelector('#sha1encoded').value = SHA1(decodedText);
       document.querySelector('#sha256encoded').value = sha256(decodedText);
       document.querySelector('#md5encoded').value = md5(decodedText);
@@ -51,6 +54,7 @@ function update(id, textarea) {
       base64encode(decodedText);
       unicodeencode(decodedText);
       byteencode(decodedText);
+      hexencode(decodedText);
       document.querySelector('#sha1encoded').value = SHA1(decodedText);
       document.querySelector('#sha256encoded').value = sha256(decodedText);
       document.querySelector('#md5encoded').value = md5(decodedText);
@@ -61,6 +65,7 @@ function update(id, textarea) {
       base64encode(decodedText);
       htmlentitiesencode(decodedText);
       byteencode(decodedText);
+      hexencode(decodedText);
       document.querySelector('#sha1encoded').value = SHA1(decodedText);
       document.querySelector('#sha256encoded').value = sha256(decodedText);
       document.querySelector('#md5encoded').value = md5(decodedText);
@@ -71,6 +76,18 @@ function update(id, textarea) {
       base64encode(decodedText);
       unicodeencode(decodedText);
       htmlentitiesencode(decodedText);
+      hexencode(decodedText);
+      document.querySelector('#sha1encoded').value = SHA1(decodedText);
+      document.querySelector('#sha256encoded').value = sha256(decodedText);
+      document.querySelector('#md5encoded').value = md5(decodedText);
+      break;
+    case 'hexencoded':
+      var decodedText = hexdecode(textarea.value);
+      urlencode(decodedText);
+      base64encode(decodedText);
+      unicodeencode(decodedText);
+      htmlentitiesencode(decodedText);
+      byteencode(decodedText);
       document.querySelector('#sha1encoded').value = SHA1(decodedText);
       document.querySelector('#sha256encoded').value = sha256(decodedText);
       document.querySelector('#md5encoded').value = md5(decodedText);
@@ -170,7 +187,21 @@ function bytedecode(text) {
   return document.querySelector('#decoded').value = str;
 }
 
+function hexencode(text) {
+  var bytes = '';
+  for(i=0;i<text.length;i++) {
+    bytes += text.charCodeAt(i).toString(16);
+  }
+  return document.querySelector('#hexencoded').value = bytes.toUpperCase();
+}
+
+function hexdecode(text) {
+  return document.querySelector('#decoded').value = hex_to_ascii(text);
+}
+
 function WordToHex(lValue){var WordToHexValue='',WordToHexValue_temp='',lByte,lCount;for(lCount=0;lCount<=3;lCount++){lByte=(lValue>>>(lCount*8))&255;WordToHexValue_temp='0'+lByte.toString(16);WordToHexValue=WordToHexValue+WordToHexValue_temp.substr(WordToHexValue_temp.length-2,2);}return WordToHexValue;}
+function hex_to_ascii(str1){var hex  = str1.toString();var str = '';for (var n = 0; n < hex.length; n += 2){str += String.fromCharCode(parseInt(hex.substr(n, 2), 16));}return str;}
+
 
 function Utf8Encode(string){string=string.replace(/\r\n/g,'\n');var utftext='';for(var n=0;n<string.length;n++){var c=string.charCodeAt(n);if(c<128){utftext+=String.fromCharCode(c);}
 else if((c>127)&&(c<2048)){utftext+=String.fromCharCode((c>>6)|192);utftext+=String.fromCharCode((c&63)|128);}

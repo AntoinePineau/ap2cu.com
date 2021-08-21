@@ -41,7 +41,7 @@ input#charsIgnored {
     }
 }
 @media (min-width:769px) {
-    form > .item {
+    form > .item.third {
         width: 30%;
     }
     input#charsIgnored {
