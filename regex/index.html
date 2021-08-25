@@ -23,45 +23,52 @@
         <div class="full-row">
             <a href="/regex/tips/">Lessons and tips</a> <span class="sep">&#1421;</span> <a href="/regex/cheat-sheet/">Cheat Sheet</a>
         </div>
-        <form id="head-form">
-            <div class="item">
-              <span>
-                <label for="regex"></label>
-                <textarea id="regex" placeholder="Regular Expression" size="100"></textarea>
-              </span>
-              <span>
-                <datalist id="flagslist">
-                  <option value="g">global &#8801; Don't return after first match</option>
-                  <option value="m">multi line &#8801; ^ and $ match start/end of line</option>
-                  <option value="i">insensitive &#8801; Case insensitive match</option>
-                  <option value="x">extended &#8801; Ignore whitespace</option>
-                  <option value="s">single line &#8801; Dot matches newline</option>
-                  <option value="u">unicode &#8801; Match with full unicode</option>
-                  <option value="U">Ungreedy &#8801; Make quantifiers lazy</option>
-                  <option value="A">Anchored &#8801; Anchor to start of pattern, or at the end of the most recent match</option>
-                  <option value="J">J &#8801; Allow duplicate subpattern names</option>
-                  <option value="D">Dollar end only &#8801; $ matches only end of pattern</option>
-                </datalist>
-                <label for="flags"></label>
-                <input id="flags" placeholder="Flags" list="flagslist" size="5" type="text" />
-              </span>
-            </div>
-            <div class="item">
-                <label for="replacement"></label>
-                <textarea id="replacement" placeholder="Replacement rule" size="100"></textarea>
+        <form id="head-form" onsubmit="return testRegex()">
+            <div class="flex">
+                <div class="item flex">
+                <span>
+                    <label for="regex"></label>
+                    <textarea id="regex" placeholder="Regular Expression" size="100"></textarea>
+                </span>
+                <span>
+                    <datalist id="flagslist">
+                    <option value="g">global &#8801; Don't return after first match</option>
+                    <option value="m">multi line &#8801; ^ and $ match start/end of line</option>
+                    <option value="i">insensitive &#8801; Case insensitive match</option>
+                    <option value="x">extended &#8801; Ignore whitespace</option>
+                    <option value="s">single line &#8801; Dot matches newline</option>
+                    <option value="u">unicode &#8801; Match with full unicode</option>
+                    <option value="U">Ungreedy &#8801; Make quantifiers lazy</option>
+                    <option value="A">Anchored &#8801; Anchor to start of pattern, or at the end of the most recent match</option>
+                    <option value="J">J &#8801; Allow duplicate subpattern names</option>
+                    <option value="D">Dollar end only &#8801; $ matches only end of pattern</option>
+                    </datalist>
+                    <label for="flags"></label>
+                    <input id="flags" placeholder="Flags" list="flagslist" size="5" type="text" />
+                </span>
+                </div>
+                <div class="item">
+                    <label for="replacement"></label>
+                    <textarea id="replacement" placeholder="Replacement rule" size="100"></textarea>
+                </div>
             </div>
             <div class="full-row">
                 <button id="execute">Execute</button>
             </div>
         </form>
-        <form id="test-form">
+        <form id="test-form" onsubmit="return addTest()">
             <h2>Test Strings</h2>
-            <button id="add" title="Add Test String">+</button>
-            <div class="item test template hidden">
-                <label for="text-#"></label>
-                <textarea id="text-#" class="text" placeholder="Text to match / substitute" size="100"></textarea>
-                <button id="remove-#" class="remove" title="Remove Test String">-</button>
-                <div id="repl-#" class="repl"></div>
+            <button type="submit" id="add" title="Add Test String">+</button>
+            <div class="item test template hidden flex">
+                <span>
+                    <label for="text-#"></label>
+                    <textarea id="text-#" class="text" placeholder="Text to match / substitute" size="100"></textarea>
+                </span>
+                <span class="hidden">
+                    <label for="repl-#">Replacement</label>
+                    <div id="repl-#" class="repl"></div>
+                </span>
+                <button type="button" id="remove-#" class="remove hidden" title="Remove Test String">-</button>
             </div>
         </form>
     </body>
