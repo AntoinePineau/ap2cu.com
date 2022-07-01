@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang='en'>
+  <head>
+    <title>Implémentation Javascript du Code Challenge Eurelis 1er Juillet 2022</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="/code-challenge/main.css"/>
+  </head>
+  <body>
+    <header>
+      <img src="https://eurelis.com/static/img/logo/logo-blanc-205x65.png"/>
+      <h1>Code Challenge 1er Juillet 2022</h1>
+    </header>
+    <main>
+      <h2>Implémentation Python</h2>
+      <pre>
+        <q>class</q> Interpreter:
+        <q>def</q> __init__(self, prog):
+            self.prog = prog  # Program
+            self.registers = {}  # Registers
+            self.ip = 0  # Instruction pointer
+    
+            self.dispatch = {
+                "mov": self.mov,
+                "inc": self.inc,
+                "dec": self.dec,
+                "jnz": self.jnz,
+            }
+    
+        <q>def</q> log(self, data=""):
+            print(data)
+    
+        <q>def</q> mov(self, target, source):
+            self.registers[target] = (
+                int(source) <q>if</q> source.lstrip("+-").isdigit() <q>else</q> self.registers[source]
+            )
+            self.log(f"REGISTER - {target} = {self.registers[target]}")
+    
+        <q>def</q> inc(self, target):
+            self.registers[target] += 1
+            self.log(f"REGISTER - {target} = {self.registers[target]}")
+    
+        <q>def</q> dec(self, target):
+            self.registers[target] -= 1
+            self.log(f"REGISTER - {target} = {self.registers[target]}")
+    
+        <q>def</q> jnz(self, cond, offset):
+            real_cond = int(cond) <q>if</q> cond.lstrip("+-").isdigit() <q>else</q> self.registers[cond]
+            real_offset = (
+                int(offset) <q>if</q> offset.lstrip("+-").isdigit() <q>else</q> self.registers[offset]
+            )
+    
+            <q>if</q> real_offset != 0:
+                real_offset -= 1
+    
+            self.ip = self.ip + real_offset if real_cond else self.ip
+            self.log(f"real_cond : {real_cond}")
+            <q>if</q> real_cond:
+                self.log(f"ip (offset:{real_offset}) = {self.ip}")
+            <q>else</q>:
+                self.log(f"ip = {self.ip}")
+    
+        <q>def</q> run(self):
+            self.registers = {}
+            self.ip = 0
+    
+            <q>try</q>:
+                <q>while</q> self.ip &lt; len(self.prog):
+                    self.log(f"{self.ip:3d}\t{self.prog[self.ip]}")
+                    cmd = self.prog[self.ip].split()
+                    self.dispatch[cmd[0]](*cmd[1::])
+                    self.ip += 1
+                    self.log()
+            <q>except</q> TypeError as e:
+                self.log(f"ERROR line {self.ip} : {e}")
+    
+            <q>return</q> self.registers
+    
+    <q>def</q> simple_assembler(prog):
+        interpreter = Interpreter(prog)
+        return interpreter.run()
+    
+    <q>if</q> __name__ == "__main__":
+        prog = ["mov a 5", "inc a", "dec a", "dec a", "jnz a -1", "inc a"]
+        registers = simple_assembler(prog)
+        print(registers)
+      </pre>
+    </main>
+  </body>
+</html>

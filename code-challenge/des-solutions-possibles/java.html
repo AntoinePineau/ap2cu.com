@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang='en'>
+  <head>
+    <title>Implémentation Javascript du Code Challenge Eurelis 1er Juillet 2022</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="/code-challenge/main.css"/>
+  </head>
+  <body>
+    <header>
+      <img src="https://eurelis.com/static/img/logo/logo-blanc-205x65.png"/>
+      <h1>Code Challenge 1er Juillet 2022</h1>
+    </header>
+    <main>
+      <h2>Implémentation Java</h2>
+      <pre>
+        <q>package</q> eventCode;
+        
+        <q>import</q> java.util.HashMap;
+        <q>import</q> java.util.Map;
+        
+        <q>public class</q> SimpleAssemblerV {
+        
+          <q>private</q> Map<Character, Integer> registers;
+          <q>private</q> String[] instructions;
+          <q>private</q> int cursor;
+        
+          <q>public</q> SimpleAssemblerV(String[] inst) {
+            registers = new HashMap<>();
+            instructions = inst;
+            cursor=0;
+          }
+        
+          <q>public</q> void createRegister(char first_register) {
+            registers.put(first_register, 0);
+          }
+        
+          <q>public</q> Character indicRegister(String register) {
+            <q>if</q>(register.length() == 1) {
+              char first_register = register.charAt(0);
+              <q>if</q>(Character.isLetter(first_register)){
+                <q>if</q> (!registers.containsKey(first_register)) {
+                  createRegister(first_register);
+        
+                }
+                <q>return</q> first_register;
+              }
+            }
+      
+            <q>return</q> null; 
+          }
+        
+          <q>private</q> void inc(String register) {
+            Character reg= indicRegister(register);
+            <q>if</q>(reg != null) {
+              registers.put(reg, registers.get(reg)+1);
+            }
+          }
+      
+          <q>private</q> void dec(String register) {	
+            Character reg= indicRegister(register);
+            <q>if</q>(reg != null) {
+              registers.put(reg, registers.get(reg)-1);
+            }
+          }
+        
+          <q>private</q> void mov(String mov_indications) {
+            String[] mov_ind = mov_indications.split(" ");		
+            Character reg1  = indicRegister(mov_ind[0]);
+            Character reg2  = indicRegister(mov_ind[1]);
+            <q>if</q>(reg1 != null) {
+              <q>if</q>(reg2 != null) {
+                registers.put(reg1, registers.get(reg2));
+              }<q>else</q> {
+                registers.put(reg1,Integer.parseInt(mov_ind[1]));
+              }
+            }
+          }
+        
+          <q>private</q> void jnz(String jnz_indications) {
+            String[] jnz_ind = jnz_indications.split(" ");
+            Character reg = indicRegister(jnz_ind[0]);
+            <q>if</q>((reg != null && registers.get(reg) !=0) || (reg == null && Integer.parseInt(jnz_ind[0])!=0)) {
+              int decalage = Integer.parseInt(jnz_ind[1]);
+              cursor= cursor + (decalage-1);
+            }
+          }
+        
+          <q>public</q> void interprete() {
+            <q>while</q> (cursor &lt; instructions.length) {
+              String[] instruction_line = instructions[cursor].split(" ", 2);
+              
+              <q>switch</q> (instruction_line[0]) {
+                <q>case</q> "mov" -> mov(instruction_line[1]);
+                <q>case</q> "inc" -> inc(instruction_line[1]);
+                <q>case</q> "dec" -> dec(instruction_line[1]);
+                <q>case</q> "jnz" -> jnz(instruction_line[1]);
+                <q>default</q> -> {
+                <q>throw new</q> IllegalArgumentException("Unexpected value: " + instruction_line[0]);
+                }
+              }
+              cursor++;
+              
+            }		
+          }
+        
+          <q>public</q> void printRegister() {
+            registers.forEach((key, value) -> {
+                System.out.print(key + "=" + value + " ");
+              });
+            System.out.println();
+          }
+        }
+      </pre>
+    </main>
+  </body>
+</html>

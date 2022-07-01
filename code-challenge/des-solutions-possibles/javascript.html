@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html lang='en'>
+  <head>
+    <title>Implémentation Javascript du Code Challenge Eurelis 1er Juillet 2022</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="/code-challenge/main.css"/>
+    <script>
+      var SimpleAssembler = {
+        interpret: function(list) {
+          this.reg = {};
+          this.cmds = list;
+          this.cur=0;
+          while(this.cur<this.cmds.length) {
+            this.exec();
+            this.cur++;
+          }
+          return this.reg;
+        },
+        e: function(s) { 
+          return eval(isNaN(s) ? this.reg[s] : s) 
+        },
+        exec: function() {
+          if(this.cur>=this.cmds.length) return;
+          if(this.cur<0) this.cur = 0;
+          var cmd = this.cmds[this.cur].split(' ');
+          //console.log('%c'+cmd, 'font-family:Consolas;font-weight:bold;font-size:20px', ' to apply to Registries', this.reg);
+          eval('this.'+cmd[0]+'('+JSON.stringify(cmd)+');');
+        },
+        mov: function(cmd) {
+          this.reg[cmd[1]] = this.e(cmd[2]);
+        },
+        inc: function(cmd) {
+          this.reg[cmd[1]]++;
+        },
+        dec: function(cmd) {
+          this.reg[cmd[1]]--;
+        },
+        jnz: function(cmd) {
+          if(this.e(cmd[1])!=0) {
+            this.cur += this.e(cmd[2]) - 1;
+          }
+        }
+      };
+      function sort(obj) {
+        return Object.keys(obj).sort().reduce(function (result, key) {
+          result[key] = obj[key];
+          return result;
+        }, {});
+      }
+      function launchTest(i) {
+        document.body.style.cursor = "wait";
+        var test = document.querySelector('#'+i);
+        console.log('%c'+test.querySelector('h3').innerText,'color:red;font-weight:bold;font-size:25px');
+        var input = eval(test.querySelector('.in').innerText);
+        var outExpected = JSON.stringify(sort(JSON.parse(test.querySelector('.out-expected').innerText)));
+        var result = JSON.stringify(sort(SimpleAssembler.interpret(input)));
+        test.querySelector('.out-obtained').innerHTML = result;
+        test.querySelector('.result').innerHTML = result == outExpected ? '<div class="ok">OK</div>' : '<div class="ko">KO</div>';
+        document.body.style.cursor = "initial";
+      }
+
+      document.addEventListener("DOMContentLoaded", function() {
+        document.querySelectorAll('section').forEach(function(section) {
+          section.querySelector('button').addEventListener('click', function() {
+            launchTest(section.attributes.id.value)
+          });
+        })
+      })
+    </script>
+  </head>
+  <body>
+    <header>
+      <img src="https://eurelis.com/static/img/logo/logo-blanc-205x65.png"/>
+      <h1>Code Challenge 1er Juillet 2022</h1>
+    </header>
+    <main>
+      <h2>Implémentation Javascript</h2>
+      <pre>
+        <q>var</q> SimpleAssembler = {
+          interpret: <q>function</q>(list) {
+            this.reg = {};
+            this.cmds = list;
+            this.cur=0;
+            <q>while</q>(this.cur&lt;this.cmds.length) {
+              this.exec();
+              this.cur++;
+            }
+            <q>return</q> this.reg;
+          },
+          e: <q>function</q>(s) { 
+            <q>return</q> eval(isNaN(s) ? this.reg[s] : s) 
+          },
+          exec: <q>function</q>() {
+            <q>if</q>(this.cur>=this.cmds.length) <q>return</q>;
+            <q>if</q>(this.cur&lt;0) this.cur = 0;
+            var cmd = this.cmds[this.cur].split(' ');
+            eval('this.'+cmd[0]+'('+JSON.stringify(cmd)+');');
+          },
+          mov: <q>function</q>(cmd) {
+            this.reg[cmd[1]] = this.e(cmd[2]);
+          },
+          inc: <q>function</q>(cmd) {
+            this.reg[cmd[1]]++;
+          },
+          dec: <q>function</q>(cmd) {
+            this.reg[cmd[1]]--;
+          },
+          jnz: <q>function</q>(cmd) {
+            <q>if</q>(this.e(cmd[1])!=0) {
+              this.cur += this.e(cmd[2]) - 1;
+            }
+          }
+        };
+      </pre>
+      <!--section id="test1">
+        <h3>Test 1</h3>
+        <pre class="in">['mov a 5', 'inc a', 'dec a', 'dec a', 'jnz a -1', 'inc a']</pre>
+        <pre class="out-expected">{"a": 1}</pre>
+        <pre class="out-obtained"></pre>
+        <button>Exécuter</button>
+        <div class="result"></div>
+      </section>
+      <section id="test2">
+        <h3>Test 2</h3>
+        <pre class="in">['mov a -10', 'mov b a', 'inc a', 'dec b', 'jnz a -2']</pre>
+        <pre class="out-expected">{"a": 0, "b": -20}</pre>
+        <pre class="out-obtained"></pre>
+        <button>Exécuter</button>
+        <div class="result"></div>
+      </section>
+      <section id="test3">
+        <h3>Test 3</h3>
+        <pre class="in">['mov c 12', 'mov b 0', 'mov a 200', 'dec a', 'inc b', 'jnz a -2', 'dec c', 'mov a b', 'jnz c -5', 'jnz 0 1', 'mov c a']</pre>
+        <pre class="out-expected">{"a": 409600, "b": 409600, "c": 409600}</pre>
+        <pre class="out-obtained"></pre>
+        <button>Exécuter</button>
+        <div class="result"></div>
+      </section>
+      <section id="test4">
+        <h3>Test 4</h3>
+        <pre class="in">['mov d 100', 'dec d', 'mov b d', 'jnz b -2', 'inc d', 'mov a d', 'jnz 5 10', 'mov c a']</pre>
+        <pre class="out-expected">{"a": 1, "b": 0, "d": 1}</pre>
+        <pre class="out-obtained"></pre>
+        <button>Exécuter</button>
+        <div class="result"></div>
+      </section>
+      <section id="test5">
+        <h3>Test 5</h3>
+        <pre class="in">['mov a 1', 'mov b 1', 'mov d 26', 'jnz c 2', 'jnz 1 5', 'mov c 7', 'inc d', 'dec c', 'jnz c -2', 'mov c a', 'inc a', 'dec b', 'jnz b -2', 'mov b c', 'dec d', 'jnz d -6', 'mov c 19', 'mov d 14', 'inc a', 'dec d', 'jnz d -2', 'dec c', 'jnz c -5']</pre>
+        <pre class="out-expected">{"a": 318077, "b": 196418, "c": 0, "d":0}</pre>
+        <pre class="out-obtained"></pre>
+        <button>Exécuter</button>
+        <div class="result"></div>
+      </section>
+      <section id="test6">
+        <h3>Test 6</h3>
+        <pre class="in">['mov a 1', 'mov b 1', 'mov c 0', 'mov d 26', 'jnz c 2', 'jnz 1 5', 'mov c 7', 'inc d', 'dec c', 'jnz c -2', 'mov c a', 'inc a', 'dec b', 'jnz b -2', 'mov b c', 'dec d', 'jnz d -6', 'mov c 18', 'mov d 11', 'inc a', 'dec d', 'jnz d -2', 'dec c', 'jnz c -5']</pre>
+        <pre class="out-expected">{"a": 318009, "b": 196418, "c": 0, "d": 0}</pre>
+        <pre class="out-obtained"></pre>
+        <button>Exécuter</button>
+        <div class="result"></div>
+      </section-->
+    </main>
+  </body>
+</html>

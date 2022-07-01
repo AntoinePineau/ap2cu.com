@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <title>Code Challenge Eurelis 1er Juillet 2022</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="main.css"/>
+  </head>
+  <body>
+    <header>
+      <img src="https://eurelis.com/static/img/logo/logo-blanc-205x65.png"/>
+      <h1>Code Challenge 1er Juillet 2022</h1>
+    </header>
+    <main>
+      <q><b>Inspirations:</b></q> <a href="https://adventofcode.com/2016/day/12" target="_blank">Advent of Code 2016 - day 12</a>
+      <section class="step1">
+        <h2>Interpréteur Assembleur Simplifié</h2>
+
+        <h3>Instructions</h3>
+        <p>Le challenge consiste à créer un interpréteur assembleur simplifié qui supporte le jeu d'instructions ci-dessous.</p>
+        <ul>
+          <li><code>mov x y</code> - copie <code>y</code> (qui peut être une constante ou le contenu d'un registre) dans le registre <code>x</code></li>
+          <li><code>inc x</code> - incrémente le contenu du registre <code>x</code> de 1</li>
+          <li><code>dec x</code> - décrémente le contenu du registre <code>x</code> de 1</li>
+          <li><code>jnz x y</code> - saute jusqu'à une instruction à <code>y</code> pas (positif signifie en avant, négatif signifie en arrière, <code>y</code> peut être un registre ou une constante), seulement si <code>x</code> (qui peut être une constante ou le contenu d'un registre) ne vaut pas zero</li>
+        </ul>
+        <p>Les noms de registre sont alphabétiques (lettres uniquement). Les constantes sont toujours des nombres entiers (positifs ou négatifs).</p>
+        <p>Notes:</p>
+        <ul>
+          <li>L'instruction <code>jnz</code> se déplace par rapport à elle-même. Par exemple, un décalage de -1 continuerait à l'instruction précédente, tandis qu'un décalage de 2 sauterait l'instruction suivante.</li>
+          <li>De plus, chaque <code>inc</code>/<code>dec</code>/<code>jnz</code> sur un registre sera toujours précédé d'un <code>mov</code> sur le registre, vous n'avez donc pas à vous soucier des registres non initialisés.</li>
+        </ul>
+
+        <h3>Interface</h3>
+        <p>L'interpréteur accepte en paramètre un tableau de chaînes de caractères réprésentant le programme et retourne les regitres et leur valeur.</p>
+        <p>Exemple de programme:</p>
+        <pre>
+          mov a 5
+          inc a
+          dec a
+          dec a
+          jnz a -1
+          inc a</pre>
+
+        <p>Le code ci-dessus va :</p>
+        <ul>
+          <li>mettre le registre <code>a</code> à 5,</li>
+          <li>augmenter sa valeur de 1,</li>
+          <li>diminuer sa valeur de 2,</li>
+          <li>puis diminuer sa valeur jusqu'à ce qu'elle soit nulle (<code>jnz a -1</code> saute à l'instruction précédente si <code>a</code> n'est pas nul)</li>
+          <li>puis augmente sa valeur de 1 en laissant le registre <code>a</code> à 1</li>
+        </ul>
+
+        <p>Donc, la fonction devrait retourner :</p>
+        <pre>
+          "a" = 1</pre>
+
+        <p>Exemple en Java :</p>
+        <pre>
+        <q>// Input</q>
+        SimpleAssembler.interpret(new String[]{"mov a 5","inc a","dec a","dec a","jnz a -1","inc a"});
+
+        <q>// Output</q>
+        {a=1}</pre>
+
+        <p>Exemple en Javascript :</p>
+        <pre>
+        <q>// Input</q>
+        SimpleAssembler.interpret(List("mov a 5","inc a","dec a","dec a","jnz a -1","inc a"))
+
+        <q>// Output</q>
+        Map("a"->1)</pre>
+
+        <p>Exemple en PHP :</p>
+        <pre>
+        <q>// Input</q>
+        SimpleAssembler.interpret(List("mov a 5","inc a","dec a","dec a","jnz a -1","inc a"))
+
+        <q>// Output</q>
+        Map("a"->1)</pre>
+        
+        <p>Exemple en Python :</p>
+        <pre>
+        <q># Input</q>
+        simple_assembler(['mov a 5','inc a','dec a','dec a','jnz a -1','inc a'])
+        
+        <q># Output</q>
+        {"a": 1}</pre>
+      </section>
+      <section id="tests">
+        <h2>Tests</h2>
+        <h3>Test 1</h3>
+        <pre>
+          <q># Input</q>
+          ['mov a 5', 'inc a', 'dec a', 'dec a', 'jnz a -1', 'inc a']
+          
+          <q># Output</q>
+          {"a": 1}</pre>
+        <h3>Test 2</h3>
+        <pre>
+          <q># Input</q>
+          ['mov a -10', 'mov b a', 'inc a', 'dec b', 'jnz a -2']
+          
+          <q># Output</q>
+          {"a": 0, "b": -20}</pre>
+        <h3>Test 3</h3>
+        <pre>
+          <q># Input</q>
+          ['mov c 12', 'mov b 0', 'mov a 200', 'dec a', 'inc b', 'jnz a -2', 'dec c', 'mov a b', 'jnz c -5', 'jnz 0 1', 'mov c a']
+          
+          <q># Output</q>
+          {"a": 409600, "b": 409600, "c": 409600}</pre>
+        <h3>Test 4</h3>
+        <pre>
+          <q># Input</q>
+          ['mov d 100', 'dec d', 'mov b d', 'jnz b -2', 'inc d', 'mov a d', 'jnz 5 10', 'mov c a']
+          
+          <q># Output</q>
+          {"a": 1, "b": 0, "d": 1}</pre>
+        <h3>Test 5</h3>
+        <pre>
+          <q># Input</q>
+          ['mov a 1', 'mov b 1', 'mov d 26', 'jnz c 2', 'jnz 1 5', 'mov c 7', 'inc d', 'dec c', 'jnz c -2', 'mov c a', 'inc a', 'dec b', 'jnz b -2', 'mov b c', 'dec d', 'jnz d -6', 'mov c 19', 'mov d 14', 'inc a', 'dec d', 'jnz d -2', 'dec c', 'jnz c -5']
+          
+          <q># Output</q>
+          {"a": 318077, "b": 196418, "c": 0, "d":0}</pre>
+        <h3>Test 6</h3>
+        <pre>
+          <q># Input</q>
+          ['mov a 1', 'mov b 1', 'mov c 0', 'mov d 26', 'jnz c 2', 'jnz 1 5', 'mov c 7', 'inc d', 'dec c', 'jnz c -2', 'mov c a', 'inc a', 'dec b', 'jnz b -2', 'mov b c', 'dec d', 'jnz d -6', 'mov c 18', 'mov d 11', 'inc a', 'dec d', 'jnz d -2', 'dec c', 'jnz c -5']
+          
+          <q># Output</q>
+          {"a": 318009, "b": 196418, "c": 0, "d": 0}</pre>
+      </section>
+      <section class="step2">
+        <h2>Pour aller plus loin...</h2>
+        <p>Si vous avez terminé, vous pouvez compléter l'interpréteur avec les instructions suivantes :</p>
+        <ul>
+          <li><code>mov x, y</code> - copie <code>y</code> (soit un entier, soit la valeur d'un registre) dans le registre <code>x</code></li>
+          <li><code>inc x</code> - augmente le contenu du registre <code>x</code> d'un</li>
+          <li><code>dec x</code> - décrémente le contenu du registre <code>x</code> d'un</li>
+          <li><code>add x, y</code> - ajoute le contenu du registre <code>x</code> avec <code>y</code> (soit un entier, soit la valeur d'un registre) et stocke le résultat dans <code>x</code> (c'est-à-dire registre[x] += y)</li>
+          <li><code>sub x, y</code> - soustrait <code>y</code> (soit un entier, soit la valeur d'un registre) du registre <code>x</code> et stocke le résultat dans <code>x</code> (c'est-à-dire registre[x] -= y)</li>
+          <li><code>mul x, y</code> - idem avec multiplier (c'est-à-dire registre[x] *= y)</li>
+          <li><code>div x, y</code> - idem avec la division entière (c'est-à-dire registre[x] /= y)</li>
+          <li><code>label :</code> - définit une position de label (<code>label = identifiant + ":"</code>, un identifiant étant une chaîne qui ne correspond à aucune autre commande). Les commandes de saut et d'appel sont destinées à ces positions d'étiquettes dans le programme</li>
+          <li><code>*jmp lbl</code> - saute à l'étiquette <code>lbl</code></li>
+          <li><code>cmp x, y</code> - compare <code>x</code> (soit un entier, soit la valeur d'un registre) et <code>y</code> (soit un entier, soit la valeur d'un registre). Le résultat est utilisé dans les sauts conditionnels (<code>jne</code>, <code>je</code>, <code>jge</code>, <code>jg</code>, <code>jle</code> et <code>jl</code>)</li>
+          <li><code>jne lbl</code> - passe à l'étiquette <code>lbl</code> si les valeurs de la commande <code>cmp</code> précédente n'étaient pas égales</li>
+          <li><code>je lbl</code> - passe à l'étiquette <code>lbl</code> si les valeurs de la commande <code>cmp</code> précédente étaient égales</li>
+          <li><code>jge lbl</code> - passe à l'étiquette <code>lbl</code> si <code>x</code> était supérieur ou égal à <code>y</code> dans la commande <code>cmp</code> précédente</li>
+          <li><code>jg lbl</code> - passe à l'étiquette <code>lbl</code> si <code>x</code> était supérieur à <code>y</code> dans la commande <code>cmp</code> précédente</li>
+          <li><code>jle lbl</code> - passe à l'étiquette <code>lbl</code> si <code>x</code> était inférieur ou égal à <code>y</code> dans la commande <code>cmp</code> précédente</li>
+          <li><code>jl lbl</code> - passe à l'étiquette <code>lbl</code> si <code>x</code> était inférieur à <code>y</code> dans la commande <code>cmp</code> précédente</li>
+          <li><code>call lbl</code> - appel au sous-programme identifié par <code>lbl</code>. Lorsqu'un <code>ret</code> est trouvé dans un sous-programme, le pointeur d'instruction doit revenir à l'instruction à côté de cette commande d'appel</li>
+          <li><code>ret</code> - lorsqu'un <code>ret</code> est trouvé dans un sous-programme, le pointeur d'instruction doit revenir à l'instruction qui a appelé la fonction en cours</li>
+          <li><code>msg 'Register: ', x</code> - cette instruction stocke la sortie du programme. Il peut contenir des chaînes de texte (délimitées par des guillemets simples) et des registres. Le nombre d'arguments n'est pas limité et variera en fonction du programme</li>
+          <li><code>end</code> - cette instruction indique que le programme se termine correctement, donc la sortie stockée est renvoyée (si le programme se termine sans cette instruction, il doit renvoyer la sortie par défaut : voir ci-dessous)</li>
+          <li><code>; commentaire</code> - les commentaires ne doivent pas être pris en compte lors de l'exécution du programme</li>
+        </ul>
+        <h3>Interface</h3>
+        <p>Le format de sortie normal est une chaîne (renvoyée avec la commande <code>end</code>).<br/>Si le programme se termine sans utiliser l'instruction de fin (<code>end</code>), la valeur de retour par défaut est : -1 (sous forme d'entier)</p>
+        <h3>Exemple</h3>
+        <p>Le code Python ci-dessous définirait le registre <code>a</code>   sur 5, augmenterait sa valeur de 1, appellerait la fonction de sous-programme, diviserait sa valeur par 2, reviendrait à la première instruction d'appel, préparerait la sortie du programme, puis la renverrait avec l'instruction de fin. Dans ce cas, la sortie serait <code>(5+1)/2 = 3</code>.</p>
+        <pre>
+          <q># Input</q>
+          [
+            '; My first program',
+            'mov  a, 5',
+            'inc  a',
+            'call function',
+            'msg  '(5+1)/2 = ', a    ; output message',
+            'end',
+            'function:',
+            'div  a, 2',
+            'ret'
+          ]</pre>
+      </section>
+    </main>
+  </body>
+</html>
