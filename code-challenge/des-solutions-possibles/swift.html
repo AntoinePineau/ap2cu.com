@@ -133,13 +133,13 @@
                     srcRegister = nil
                 }
                 
-                super.init(sourceCode)
+                <q>super.init</q>(sourceCode)
             }
             
             
             
-            public <q>override func</q> execute(_ context: Compiler) {
-                var newValue = context.get(dstRegister)
+            <q>public</q> <q>override func</q> execute(_ context: Compiler) {
+                <q>var</q> newValue = context.get(dstRegister)
                 if <q>let</q> value = srcValue {
                     newValue += value
                 }
@@ -161,10 +161,10 @@
             
             <q>override</q> <q>init</q>(_ sourceCode: [String.SubSequence]) {
                 register = String(sourceCode[1])
-                super.init(sourceCode)
+                <q>super.init</q>(sourceCode)
             }
             
-            public <q>override func</q> execute(_ context: Compiler) {
+            <q>public</q> <q>override func</q> execute(_ context: Compiler) {
                 context.set(value: context.get(register) - 1, for: register)
                 context.setInstructionOffset(1)
             }
@@ -192,11 +192,11 @@
                     srcRegister = nil
                 }
                 
-                super.init(sourceCode)
+                <q>super.init</q>(sourceCode)
             }
             
-            public <q>override func</q> execute(_ context: Compiler) {
-                var newValue = context.get(dstRegister)
+            <q>public</q> <q>override func</q> execute(_ context: Compiler) {
+                <q>var</q> newValue = context.get(dstRegister)
                 if <q>let</q> value = srcValue {
                     newValue /= value
                 }
@@ -218,10 +218,10 @@
             
             <q>override</q> <q>init</q>(_ sourceCode: [String.SubSequence]) {
                 register = String(sourceCode[1])
-                super.init(sourceCode)
+                <q>super.init</q>(sourceCode)
             }
             
-            public <q>override func</q> execute(_ context: Compiler) {                
+            <q>public</q> <q>override func</q> execute(_ context: Compiler) {                
                 context.set(value: context.get(register) + 1, for: register)
                 context.setInstructionOffset(1)
             }
@@ -252,12 +252,12 @@
                 } else {
                     jumpRegister = String(sourceCode[2])
                 }
-                super.init(sourceCode)
+                <q>super.init</q>(sourceCode)
             }
             
-            public <q>override func</q> execute(_ context: Compiler) {
+            <q>public</q> <q>override func</q> execute(_ context: Compiler) {
                 
-                var jumpValue: Int? = nil
+                <q>var</q> jumpValue: Int? = nil
                 if <q>let</q> jumpOffset = jumpOffset {
                     jumpValue = jumpOffset
                 }
@@ -265,7 +265,7 @@
                     jumpValue = context.get(jumpRegister)
                 }
                 
-                var test: Int? = nil
+                <q>var</q> test: Int? = nil
                 if <q>let</q> testValue = testValue {
                     test = testValue
                 }
@@ -294,10 +294,10 @@
             
             <q>override</q> <q>init</q>(_ sourceCode: [String.SubSequence]) {
                 label = String(sourceCode[1])
-                super.init(sourceCode)
+                <q>super.init</q>(sourceCode)
             }
             
-            public <q>override func</q> execute(_ context: Compiler) {
+            <q>public</q> <q>override func</q> execute(_ context: Compiler) {
                 context.goto(label: label)
             }
         }
@@ -322,10 +322,10 @@
                     srcRegister = nil
                 }
                 
-                super.init(sourceCode)
+                <q>super.init</q>(sourceCode)
             }
             
-            public <q>override func</q> execute(_ context: Compiler) {                
+            <q>public</q> <q>override func</q> execute(_ context: Compiler) {                
                 if <q>let</q> value = srcValue {
                     context.set(value: value, for: dstRegister)
                 }
@@ -356,11 +356,11 @@
                     srcRegister = nil
                 }
                 
-                super.init(sourceCode)
+                <q>super.init</q>(sourceCode)
             }
             
-            public <q>override func</q> execute(_ context: Compiler) {
-                var newValue = context.get(dstRegister)
+            <q>public</q> <q>override func</q> execute(_ context: Compiler) {
+                <q>var</q> newValue = context.get(dstRegister)
                 if <q>let</q> value = srcValue {
                     newValue *= value
                 }
@@ -390,11 +390,11 @@
                 } else {
                     srcRegister = nil
                 }
-                super.init(sourceCode)
+                <q>super.init</q>(sourceCode)
             }
 
-            public <q>override func</q> execute(_ context: Compiler) {
-                var newValue = context.get(dstRegister)
+            <q>public</q> <q>override func</q> execute(_ context: Compiler) {
+                <q>var</q> newValue = context.get(dstRegister)
                 if <q>let</q> value = srcValue {
                     newValue -= value
                 }
