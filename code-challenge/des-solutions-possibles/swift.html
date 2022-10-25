@@ -1,0 +1,410 @@
+<!DOCTYPE html>
+<html lang='en'>
+  <head>
+    <title>Implémentation Swift du Code Challenge Eurelis 1er Juillet 2022</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="/code-challenge/main.css"/>
+  </head>
+  <body>
+    <header>
+      <img src="https://eurelis.com/static/img/logo/logo-blanc-205x65.png"/>
+      <h1>Code Challenge 1er Juillet 2022</h1>
+    </header>
+    <main>
+      <h2>Implémentation Swift</h2>
+      <h3>Classe Compiler</h3>
+      <pre>
+        <q>import</q> Foundation
+
+        <q>class</q> Compiler {
+            
+            <q>var</q> instructionIndex =  0
+            <q>private var</q> instructions = [Instruction]()
+            <q>private var</q> registers = [String: Int]()
+            <q>var</q> labelPositions = [String: Int]()
+            
+            <q>init</q>(_ instructs: [String]) {
+                instructions = instructs.enumerated().compactMap({ Instruction.parse($0.element, $0.offset, self) })
+            }
+            
+            <q>public func</q> run() {
+                <q>let</q> lastInstruction = instructions.count
+                <q>while</q> instructionIndex >= 0 && instructionIndex < lastInstruction {
+                  <q>let</q> instruction = instructions[instructionIndex]
+                    instruction.execute(self)
+                }
+            }
+            
+            <q>public func</q> setInstructionOffset(_ offset: Int) {
+                instructionIndex += offset
+            }
+            
+            <q>public func</q> get(_ register: String) -> Int {
+              <q>return</q> registers[register] ?? 0
+            }
+            
+            <q>public func</q> set(value: Int, for register: String) {
+                registers[register] = value
+            }
+            
+            
+            <q>public func</q> asString() -> String {
+              <q>return</q> "\(registers)"
+            }
+            
+            <q>public func</q> goto(label: String) {
+              <q>guard let</q> position = labelPositions[label] <q>else</q> {
+                    print("oups label \(label) not found")
+                    abort()
+                }
+                
+                instructionIndex = position + 1
+            }
+        }
+      </pre>
+      <h3>Classe Instructions</h3>
+      <pre>
+        <q>import</q> Foundation
+
+        <q>class</q> Instruction {   
+            
+          <q>init</q>(_ src: [String.SubSequence]) { }
+              
+            <q>public static func</q> parse(_ str: String, _ offset: Int, _ context: Compiler) -> Instruction? {
+                
+              <q>let</q> split = str.split(separator: " ")
+              <q>let</q> cmdName = String(split[0])
+                
+              <q>switch</q> cmdName {
+              <q>case</q> "mov":
+                <q>return</q> Mov(split)
+              <q>case</q> "inc":
+                <q>return</q> Inc(split)
+              <q>case</q> "dec":
+                <q>return</q> Dec(split)
+              <q>case</q> "jnz":
+                <q>return</q> Jnz(split)
+              <q>case</q> "add":
+                <q>return</q> Add(split)
+              <q>case</q> "sub":
+                <q>return</q> Sub(split)
+              <q>case</q> "mul":
+                <q>return</q> Mul(split)
+              <q>case</q> "div":
+                <q>return</q> Div(split)
+              <q>case</q> "*jmp":
+                <q>return</q> Jump(split)
+              <q>default</q>:
+                    
+                  <q>if let</q> lastCharacter = cmdName.last,
+                        lastCharacter == ":" {
+                        <q>var</q> label = cmdName
+                        label.removeLast()
+                        context.labelPositions[label] = offset
+                    }
+                    
+                  <q>return</q> nil
+                }
+            }
+            
+            <q>public func</q> execute(_ context: Compiler) {
+                context.setInstructionOffset(1)
+            }
+        }
+      </pre>
+      <h3>Classe Add</h3>
+      <pre>
+        <q>import</q> Foundation
+
+        <q>class</q> Add: Instruction {
+            
+            <q>let</q> dstRegister: String
+            <q>let</q> srcRegister: String?
+            <q>let</q> srcValue: Int?
+            
+            <q>override</q> <q>init</q>(_ sourceCode: [String.SubSequence]) {
+                dstRegister = String(sourceCode[1])
+                srcValue = Int(sourceCode[2])
+                
+                if srcValue == nil {
+                    srcRegister = String(sourceCode[2])
+                } else {
+                    srcRegister = nil
+                }
+                
+                super.init(sourceCode)
+            }
+            
+            
+            
+            public <q>override func</q> execute(_ context: Compiler) {
+                var newValue = context.get(dstRegister)
+                if <q>let</q> value = srcValue {
+                    newValue += value
+                }
+                else if <q>let</q> srcRegister = srcRegister {
+                    newValue += context.get(srcRegister)
+                }
+                
+                context.set(value: newValue, for: dstRegister)
+            }
+        }
+      </pre>
+      <h3>Classe Dec</h3>
+      <pre>
+        <q>import</q> Foundation
+
+        <q>class</q> Dec: Instruction {
+            
+            <q>let</q> register: String
+            
+            <q>override</q> <q>init</q>(_ sourceCode: [String.SubSequence]) {
+                register = String(sourceCode[1])
+                super.init(sourceCode)
+            }
+            
+            public <q>override func</q> execute(_ context: Compiler) {
+                context.set(value: context.get(register) - 1, for: register)
+                context.setInstructionOffset(1)
+            }
+        }        
+      </pre>
+      <h3>Classe Div</h3>
+      <pre>
+        <q>import</q> Foundation
+
+        <q>class</q> Div: Instruction {
+            
+            <q>let</q> dstRegister: String
+            <q>let</q> srcRegister: String?
+            <q>let</q> srcValue: Int?
+            
+            <q>override</q> <q>init</q>(_ sourceCode: [String.SubSequence]) {
+                
+                dstRegister = String(sourceCode[1])
+                
+                srcValue = Int(sourceCode[2])
+                
+                if srcValue == nil {
+                    srcRegister = String(sourceCode[2])
+                } else {
+                    srcRegister = nil
+                }
+                
+                super.init(sourceCode)
+            }
+            
+            public <q>override func</q> execute(_ context: Compiler) {
+                var newValue = context.get(dstRegister)
+                if <q>let</q> value = srcValue {
+                    newValue /= value
+                }
+                else if <q>let</q> srcRegister = srcRegister {
+                    newValue /= context.get(srcRegister)
+                }
+                
+                context.set(value: newValue, for: dstRegister)
+            }
+        }
+      </pre>
+      <h3>Classe Inc</h3>
+      <pre>
+        <q>import</q> Foundation
+
+        <q>class</q> Inc: Instruction {
+            
+            <q>let</q> register: String
+            
+            <q>override</q> <q>init</q>(_ sourceCode: [String.SubSequence]) {
+                register = String(sourceCode[1])
+                super.init(sourceCode)
+            }
+            
+            public <q>override func</q> execute(_ context: Compiler) {                
+                context.set(value: context.get(register) + 1, for: register)
+                context.setInstructionOffset(1)
+            }
+        }
+      </pre>
+      <h3>Classe Jnz</h3>
+      <pre>
+        <q>import</q> Foundation
+
+        <q>class</q> Jnz: Instruction {
+            
+            <q>let</q> testRegister: String?
+            <q>let</q> testValue: Int?
+            
+            <q>let</q> jumpOffset: Int?
+            <q>let</q> jumpRegister: String?
+            
+            <q>override</q> <q>init</q>(_ sourceCode: [String.SubSequence]) {
+                testValue = Int(sourceCode[1])
+                if testValue != nil {
+                    testRegister = nil
+                } else {
+                    testRegister = String(sourceCode[1])
+                }
+                jumpOffset = Int(sourceCode[2])
+                if (jumpOffset != nil) {
+                    jumpRegister = nil
+                } else {
+                    jumpRegister = String(sourceCode[2])
+                }
+                super.init(sourceCode)
+            }
+            
+            public <q>override func</q> execute(_ context: Compiler) {
+                
+                var jumpValue: Int? = nil
+                if <q>let</q> jumpOffset = jumpOffset {
+                    jumpValue = jumpOffset
+                }
+                else if <q>let</q> jumpRegister = jumpRegister {
+                    jumpValue = context.get(jumpRegister)
+                }
+                
+                var test: Int? = nil
+                if <q>let</q> testValue = testValue {
+                    test = testValue
+                }
+                else if <q>let</q> testRegister = testRegister {
+                    test = context.get(testRegister)
+                }
+                
+                guard <q>let</q> test = test,
+                      <q>let</q> jumpValue = jumpValue,
+                    test != 0 else {
+                    context.setInstructionOffset(1)
+                    return
+                }
+                
+                context.setInstructionOffset(jumpValue)
+            }
+        }
+      </pre>
+      <h3>Classe Jump</h3>
+      <pre>
+        <q>import</q> Foundation
+
+        <q>class</q> Jump: Instruction {
+            
+            <q>let</q> label: String
+            
+            <q>override</q> <q>init</q>(_ sourceCode: [String.SubSequence]) {
+                label = String(sourceCode[1])
+                super.init(sourceCode)
+            }
+            
+            public <q>override func</q> execute(_ context: Compiler) {
+                context.goto(label: label)
+            }
+        }
+      </pre>
+      <h3>Classe Mov</h3>
+      <pre>
+        <q>import</q> Foundation
+
+        <q>class</q> Mov: Instruction {
+            
+            <q>let</q> dstRegister: String
+            <q>let</q> srcRegister: String?
+            <q>let</q> srcValue: Int?
+            
+            <q>override</q> <q>init</q>(_ sourceCode: [String.SubSequence]) {
+                dstRegister = String(sourceCode[1])
+                srcValue = Int(sourceCode[2])
+                
+                if srcValue == nil {
+                    srcRegister = String(sourceCode[2])
+                } else {
+                    srcRegister = nil
+                }
+                
+                super.init(sourceCode)
+            }
+            
+            public <q>override func</q> execute(_ context: Compiler) {                
+                if <q>let</q> value = srcValue {
+                    context.set(value: value, for: dstRegister)
+                }
+                if <q>let</q> srcRegister = srcRegister {
+                    context.set(value: context.get(srcRegister), for: dstRegister)
+                }
+                context.setInstructionOffset(1)
+            }
+        }
+      </pre>
+      <h3>Classe Mul</h3>
+      <pre>
+        <q>import</q> Foundation
+
+        <q>class</q> Mul: Instruction {
+            
+            <q>let</q> dstRegister: String
+            <q>let</q> srcRegister: String?
+            <q>let</q> srcValue: Int?
+            
+            <q>override</q> <q>init</q>(_ sourceCode: [String.SubSequence]) {
+                dstRegister = String(sourceCode[1])
+                srcValue = Int(sourceCode[2])
+                
+                if srcValue == nil {
+                    srcRegister = String(sourceCode[2])
+                } else {
+                    srcRegister = nil
+                }
+                
+                super.init(sourceCode)
+            }
+            
+            public <q>override func</q> execute(_ context: Compiler) {
+                var newValue = context.get(dstRegister)
+                if <q>let</q> value = srcValue {
+                    newValue *= value
+                }
+                else if <q>let</q> srcRegister = srcRegister {
+                    newValue *= context.get(srcRegister)
+                }
+                context.set(value: newValue, for: dstRegister)
+            }
+        }
+      </pre>
+      <h3>Classe Sub</h3>
+      <pre>
+        <q>import</q> Foundation
+
+        <q>class</q> Sub: Instruction {
+            
+            <q>let</q> dstRegister: String
+            <q>let</q> srcRegister: String?
+            <q>let</q> srcValue: Int?
+            
+            <q>override</q> <q>init</q>(_ sourceCode: [String.SubSequence]) {
+                dstRegister = String(sourceCode[1])
+                srcValue = Int(sourceCode[2])
+                
+                if srcValue == nil {
+                    srcRegister = String(sourceCode[2])
+                } else {
+                    srcRegister = nil
+                }
+                super.init(sourceCode)
+            }
+
+            public <q>override func</q> execute(_ context: Compiler) {
+                var newValue = context.get(dstRegister)
+                if <q>let</q> value = srcValue {
+                    newValue -= value
+                }
+                else if <q>let</q> srcRegister = srcRegister {
+                    newValue -= context.get(srcRegister)
+                }
+                context.set(value: newValue, for: dstRegister)
+            }
+        }
+      </pre>
+    </main>
+  </body>
+</html>
