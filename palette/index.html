@@ -15,6 +15,7 @@
     <meta name="msapplication-TileColor" content="#000000">
     <meta name="msapplication-config" content="/img/browserconfig.xml">
     <meta name="theme-color" content="#ffffff">
+    <link rel="stylesheet" href="/css/home.css"/>
     <style>
       html, body { margin: 0 20px; font-family: Verdana, Tahoma, sans-serif;}
       span.color { padding: 10px; margin: 5px; text-transform: capitalize; border: solid 2px; }
@@ -29,10 +30,11 @@
       td.contrast { display: block; font-weight: bold; font-size: 20px; margin: 5px; width: 50% }
       td.contrast span { font-size: 28px }
       td.accessibility { display: block; font-weight: bold; font-size: 16px; margin: 5px; text-align: right;width: 50% }
-      h2 { clear: both; padding-top: 20px; }
+      h2 { clear: both; padding-top: 20px; text-align: left; }
       h3 { font-size: 32px; text-transform: uppercase; text-align: center; }
       input.color { width: 100px; margin: 5px; min-height: 50px}
       label.color { position: relative; left: -93px; color: white; top: -12px; }
+      button.color {position: relative; left: -163px; width: 100px; top: 19px;}
     </style>
   </head>
   <body>
@@ -96,8 +98,15 @@
         return '#'+r+g+b;
       }
       function onColorChanged(event) {
-        var item = event.srcElement;  
-        document.querySelector('label[for='+item.id+']').innerHTML = item.value;
+        var item = event.srcElement;
+        document.querySelector('label[for='+item.getAttribute('id')+']').innerHTML = item.value;
+        updateHash();
+      }
+      function onButtonClicked(event) {
+        var item = event.srcElement;
+        var color = generateRandomColor();
+        document.getElementById(item.getAttribute('data-input')).value = color;
+        document.querySelector('label[for='+item.getAttribute('data-input')+']').innerHTML = color;
         updateHash();
       }
       function updateHash() {
@@ -108,7 +117,7 @@
         window.location.hash = h.substring(1);
         updateContrastChecker();
       }
-      function addNewColorInput(color) {
+      function addNewColorInput(color, nb) {
         var input = document.createElement('input');
         input.setAttribute('type', 'color');
         input.setAttribute('name', 'color'+nb);
@@ -120,19 +129,25 @@
         label.setAttribute('for', 'color'+nb);
         label.innerHTML = color;
         label.setAttribute('class', 'color');
+        var button = document.createElement('button');
+        button.setAttribute('data-input', 'color'+nb);
+        button.setAttribute('class', 'color');
+        button.innerHTML = 'Random';
+        button.addEventListener('click', onButtonClicked);
         document.querySelector('#colors').append(input);
         document.querySelector('#colors').append(label);
+        document.querySelector('#colors').append(button);
       }
       function onNumberColorsChanged(){
         var nb = document.querySelectorAll('#colors .color').length;
-        var newNb = this.value*2;
+        var newNb = this.value*3;
         while(nb>newNb) {
           document.querySelector('#colors').removeChild(document.querySelectorAll('#colors .color')[nb-1]);
           nb = document.querySelectorAll('#colors .color').length;
         }
         while(nb<newNb) {
           var color = generateRandomColor();
-          addNewColorInput(color);
+          addNewColorInput(color, nb);
           nb = document.querySelectorAll('#colors .color').length;
         }
         updateHash();
@@ -185,7 +200,7 @@
           var colors = window.location.hash.substring(1).split('-');
           document.querySelector('#nb').value = colors.length;
           for(i=0;i<colors.length;i++) {
-            addNewColorInput('#'+colors[i]);
+            addNewColorInput('#'+colors[i], i);
           }
         }
         document.querySelector('#nb').addEventListener('change', onNumberColorsChanged);
