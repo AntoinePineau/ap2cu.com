@@ -33,7 +33,9 @@
       h2 { clear: both; padding-top: 20px; text-align: left; }
       h3 { font-size: 32px; text-transform: uppercase; text-align: center; }
       input.color { width: 100px; margin: 5px; min-height: 50px}
-      label.color { position: relative; left: -93px; color: white; top: -12px; }
+      label.color { position: relative; left: -93px; top: -12px; }
+      label.color.white { color: white; }
+      label.color.white { color: black; }
       button.color {position: relative; left: -163px; width: 100px; top: 19px;}
     </style>
   </head>
@@ -128,7 +130,8 @@
         var label = document.createElement('label');
         label.setAttribute('for', 'color'+nb);
         label.innerHTML = color;
-        label.setAttribute('class', 'color');
+        label.setAttribute('class', 'color white');
+        if(getRelativeLuminance(color)<0.7) label.setAttribute('class', 'color dark');
         var button = document.createElement('button');
         button.setAttribute('data-input', 'color'+nb);
         button.setAttribute('class', 'color');
@@ -156,8 +159,6 @@
         var keep = '';
         var drop = '';
         var rgb = window.location.hash.substring(1).split('-');
-        //var rgb = '5bc0eb-a32900-f3a539-0a1128-fefcfb'.split('-'); // paroisse
-        //var rgb = ['03254e', 'f9f8f8', '517664', 'ff44c5', '0000  00']; // L'osmose
         for(i=0;i<rgb.length;i++) {
           var rgb1 = rgb[i];
           for(j=i+1;j<rgb.length;j++) {
