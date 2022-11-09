@@ -2,3 +2,9 @@
 /tools/encode/  /encode/
 /tools/regex    /regex/
 /tools/regex/   /regex/
+/color  /palette/
+/colors  /palette/
+/contrast  /palette/
+/contrast-ratio  /palette/
+/ratio  /palette/
+/accessibility  /palette/
