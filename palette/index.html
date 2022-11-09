@@ -33,9 +33,9 @@
       h2 { clear: both; padding-top: 20px; text-align: left; }
       h3 { font-size: 32px; text-transform: uppercase; text-align: center; }
       input.color { width: 100px; margin: 5px; min-height: 50px}
-      label.color { position: relative; left: -93px; top: -12px; }
+      label.color { position: relative; left: -93px; top: -12px; font-weight: bold; text-transform: uppercase; }
       label.color.white { color: white; }
-      label.color.white { color: black; }
+      label.color.dark { color: black; }
       button.color {position: relative; left: -163px; width: 100px; top: 19px;}
     </style>
   </head>
@@ -57,6 +57,7 @@
         return r <= 0.03928 ? r / 12.92 : ((r + 0.055) / 1.055)**2.4;
       }
       function getRelativeLuminance(rgb) {
+        if(rgb.charAt(0)=='#') rgb = rgb.substring(1);
         var R = getColorComposite(rgb, 0);
         var G = getColorComposite(rgb, 2);
         var B = getColorComposite(rgb, 4);
@@ -131,7 +132,7 @@
         label.setAttribute('for', 'color'+nb);
         label.innerHTML = color;
         label.setAttribute('class', 'color white');
-        if(getRelativeLuminance(color)<0.7) label.setAttribute('class', 'color dark');
+        if(getRelativeLuminance(color)>0.7) label.setAttribute('class', 'color dark');
         var button = document.createElement('button');
         button.setAttribute('data-input', 'color'+nb);
         button.setAttribute('class', 'color');
