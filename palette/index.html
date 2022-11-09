@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <title>WCAG AAA Accessibility Color Palette Generator | AP2cu.com tools</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-V46RDY9W4Q"></script>
+    <script>window.dataLayer = window.dataLayer || [];function gtag(){dataLayer.push(arguments);}gtag('js', new Date());gtag('config', 'G-V46RDY9W4Q');</script>
+    <link rel="apple-touch-icon" sizes="180x180" href="/img/apple-touch-icon.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="/img/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="/img/favicon-16x16.png">
+    <link rel="manifest" href="/img/site.webmanifest">
+    <link rel="mask-icon" href="/img/safari-pinned-tab.svg" color="#cd0000">
+    <link rel="shortcut icon" href="/img/favicon.ico">
+    <meta name="msapplication-TileColor" content="#000000">
+    <meta name="msapplication-config" content="/img/browserconfig.xml">
+    <meta name="theme-color" content="#ffffff">
+    <style>
+      html, body { margin: 0 20px; font-family: Verdana, Tahoma, sans-serif;}
+      span.color { padding: 10px; margin: 5px; text-transform: capitalize; border: solid 2px; }
+      table.colors tr:nth-child(2) { border: solid 2px black; display: flex; width: fit-content; font-size: 12px; margin:-7px 6px 10px; width:calc(100% - 15px) }
+      table.colors[data-rating="5"] tr:nth-child(2) { background: #d2fbd0; color: #0d5f07}
+      table.colors[data-rating="4"] tr:nth-child(2) { background: #d2fbd0; color: #0d5f07}
+      table.colors[data-rating="3"] tr:nth-child(2) { background: #fbf5d0; color: #5f5207}
+      table.colors[data-rating="2"] tr:nth-child(2) { background: #fbd0da; color: #5f071c}
+      table.colors[data-rating="1"] tr:nth-child(2) { background: #fbd0da; color: #5f071c}
+      table.colors { float: left }
+      td { display: flex }
+      td.contrast { display: block; font-weight: bold; font-size: 20px; margin: 5px; width: 50% }
+      td.contrast span { font-size: 28px }
+      td.accessibility { display: block; font-weight: bold; font-size: 16px; margin: 5px; text-align: right;width: 50% }
+      h2 { clear: both; padding-top: 20px; }
+      h3 { font-size: 32px; text-transform: uppercase; text-align: center; }
+      input.color { width: 100px; margin: 5px; min-height: 50px}
+      label.color { position: relative; left: -93px; color: white; top: -12px; }
+    </style>
+  </head>
+  <body>
+    <h1>Find a WCAG AAA accessible color palette</h1>
+    <h2>1. Choose your colors</h2>
+    <form action="javascript:void(0)">
+      <label>Number of colors: <input type="number" name="nb" id="nb" value="5" max="10" min="2"/></label>
+      <div id="colors"></div>
+    </form>
+    <h2 style="background:#d2fbd0;color:#0d5f07">2. Associate the following colors</h2>
+    <div id="keep"></div>
+    <h2 style="background:#fbd0da;color:#5f071c">3. Avoid to associate the following colors</h2>
+    <div id="drop"></div>
+    <script>
+      function getColorComposite(rgb, index) {
+        if(rgb.charAt(0)=='#') rgb = rgb.substring(1);
+        var r = parseInt(rgb.substring(index, index + 2), 16) / 255;
+        return r <= 0.03928 ? r / 12.92 : ((r + 0.055) / 1.055)**2.4;
+      }
+      function getRelativeLuminance(rgb) {
+        var R = getColorComposite(rgb, 0);
+        var G = getColorComposite(rgb, 2);
+        var B = getColorComposite(rgb, 4);
+        return 0.2126 * R + 0.7152 * G + 0.0722 * B;
+      }
+      function getContrastRatio(rgb1, rgb2) {
+        var L1 = getRelativeLuminance(rgb1);
+        var L2 = getRelativeLuminance(rgb2);
+        var L = (L1 + 0.05) / (L2 + 0.05);
+        if(L<1) L=1/L;
+        return L;
+      }
+      const Accessibility = {
+        VERY_POOR : "Very Poor", // < 3
+        POOR : "Poor", // >= 3
+        GOOD : "Good", // >= 4.5
+        VERY_GOOD : "Very Good", // >= 7
+        SUPER : "Super" // >= 14
+      }
+      function getAccessibility(contrast) {
+        if(contrast >= 12) return Accessibility.SUPER;
+        if(contrast >= 7) return Accessibility.VERY_GOOD;
+        if(contrast >= 4.5) return Accessibility.GOOD;
+        if(contrast >= 3) return Accessibility.POOR;
+        return Accessibility.VERY_POOR;
+      }
+      function getRating(contrast) {
+        if(contrast >= 12) return 5;
+        if(contrast >= 7) return 4;
+        if(contrast >= 4.5) return 3;
+        if(contrast >= 3) return 2;
+        return 1;
+      }
+      function randomIntFromInterval(min, max) { // min and max included 
+        return Math.floor(Math.random() * (max - min + 1) + min)
+      }
+      function generateRandomColor() {
+        var r = randomIntFromInterval(0, 255).toString(16);
+        var g = randomIntFromInterval(0, 255).toString(16);
+        var b = randomIntFromInterval(0, 255).toString(16);
+        return '#'+r+g+b;
+      }
+      function onColorChanged(event) {
+        var item = event.srcElement;  
+        document.querySelector('label[for='+item.id+']').innerHTML = item.value;
+        updateHash();
+      }
+      function updateHash() {
+        var h = '';
+        [].slice.call(document.querySelectorAll('input.color')).forEach(element => {
+          h += '-'+element.value.substring(1);
+        });
+        window.location.hash = h.substring(1);
+        updateContrastChecker();
+      }
+      function addNewColorInput(color) {
+        var input = document.createElement('input');
+        input.setAttribute('type', 'color');
+        input.setAttribute('name', 'color'+nb);
+        input.setAttribute('id', 'color'+nb);
+        input.setAttribute('class', 'color');
+        input.value = color;
+        input.addEventListener('input', onColorChanged);
+        var label = document.createElement('label');
+        label.setAttribute('for', 'color'+nb);
+        label.innerHTML = color;
+        label.setAttribute('class', 'color');
+        document.querySelector('#colors').append(input);
+        document.querySelector('#colors').append(label);
+      }
+      function onNumberColorsChanged(){
+        var nb = document.querySelectorAll('#colors .color').length;
+        var newNb = this.value*2;
+        while(nb>newNb) {
+          document.querySelector('#colors').removeChild(document.querySelectorAll('#colors .color')[nb-1]);
+          nb = document.querySelectorAll('#colors .color').length;
+        }
+        while(nb<newNb) {
+          var color = generateRandomColor();
+          addNewColorInput(color);
+          nb = document.querySelectorAll('#colors .color').length;
+        }
+        updateHash();
+      }
+      function updateContrastChecker() {
+        var keep = '';
+        var drop = '';
+        var rgb = window.location.hash.substring(1).split('-');
+        //var rgb = '5bc0eb-a32900-f3a539-0a1128-fefcfb'.split('-'); // paroisse
+        //var rgb = ['03254e', 'f9f8f8', '517664', 'ff44c5', '0000  00']; // L'osmose
+        for(i=0;i<rgb.length;i++) {
+          var rgb1 = rgb[i];
+          for(j=i+1;j<rgb.length;j++) {
+            var rgb2 = rgb[j];
+            var l1 = getRelativeLuminance(rgb1), l2 = getRelativeLuminance(rgb2);
+            var c1 = rgb1+';color:#'+rgb2, c2 = rgb2+';color:#'+rgb1;
+            var ratio = getContrastRatio(rgb1, rgb2);
+            var accessibility = getAccessibility(ratio);
+            var rating = getRating(ratio);
+            var html = '';
+            html += '<table class="colors" data-rating="'+rating+'"><tr><td colspan="2">\n';
+            html += '  <span class="color" style="background:#'+c1+'">\n';
+            html += '    <h3>#'+rgb1+'</h3>\n';
+            html += '    Relative Luminance: <span title="'+l1+'">'+Math.round(l1*10000000)/10000000+'</span>';
+            html += '  </span>\n';
+            html += '  <span class="color" style="background:#'+c2+'">\n';
+            html += '    <h3>#'+rgb2+'</h3>\n';
+            html += '    Relative Luminance: <span title="'+l2+'">'+Math.round(l2*10000000)/10000000+'</span>';
+            html += '  </span>\n';
+            html += '</td></tr>\n';
+            html += '<tr>\n';
+            html += '  <td class="contrast">Contrast : <span title="'+ratio+'">'+Math.round(100*ratio)/100+'</span></td>\n';
+            html += '  <td class="accessibility"><div>'+accessibility+'</div>\n';
+            for(a=rating;a>0;a--) html += '&#9733;';
+            for(a=rating;a<5;a++) html += '&#9734;';
+            html += '  </td>\n';
+            html += '</tr></table>\n';
+            if(rating > 3) {
+              keep += html;
+            } else {
+              drop += html;
+            }
+          }
+        }
+        document.querySelector('#keep').innerHTML = keep;
+        document.querySelector('#drop').innerHTML = drop;
+      }
+      document.addEventListener('DOMContentLoaded', function () {
+        if(window.location.hash.length>1) {
+          var colors = window.location.hash.substring(1).split('-');
+          document.querySelector('#nb').value = colors.length;
+          for(i=0;i<colors.length;i++) {
+            addNewColorInput('#'+colors[i]);
+          }
+        }
+        document.querySelector('#nb').addEventListener('change', onNumberColorsChanged);
+        updateContrastChecker();
+        document.getElementById('nb').dispatchEvent(new Event("change"));
+      });
+    </script>
+  </body>
+</html>
