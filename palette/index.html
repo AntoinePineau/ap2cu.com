@@ -20,11 +20,11 @@
       html, body { margin: 0 20px; font-family: Verdana, Tahoma, sans-serif;}
       span.color { min-width:256px; padding: 10px; margin: 5px; text-transform: capitalize; border: solid 2px; }
       table.colors tr:nth-child(2) { border: solid 2px black; display: flex; width: fit-content; font-size: 12px; margin:-7px 6px 10px; width:calc(100% - 15px) }
-      table.colors[data-rating="5"] tr:nth-child(2) { background: #d2fbd0; color: #0d5f07}
+      table.colors[data-rating="5"] tr:nth-child(2), .ok { background: #d2fbd0; color: #0d5f07}
       table.colors[data-rating="4"] tr:nth-child(2) { background: #d2fbd0; color: #0d5f07}
       table.colors[data-rating="3"] tr:nth-child(2) { background: #fbf5d0; color: #5f5207}
       table.colors[data-rating="2"] tr:nth-child(2) { background: #fbd0da; color: #5f071c}
-      table.colors[data-rating="1"] tr:nth-child(2) { background: #fbd0da; color: #5f071c}
+      table.colors[data-rating="1"] tr:nth-child(2), .ko { background: #fbd0da; color: #5f071c}
       table.colors { float: left }
       td { display: flex }
       td.contrast { display: block; font-weight: bold; font-size: 20px; margin: 5px; width: 50% }
@@ -32,11 +32,12 @@
       td.accessibility { display: block; font-weight: bold; font-size: 16px; margin: 5px; text-align: right;width: 50% }
       h2 { clear: both; padding-top: 20px; text-align: left; }
       h3 { font-size: 32px; text-transform: uppercase; text-align: center; }
-      input.color { width: 110px; margin: 5px; min-height: 50px}
-      label.color { position: relative; left: -100px; top: -12px; font-weight: bold; text-transform: uppercase; }
-      label.color.white { color: white; }
-      label.color.dark { color: black; }
-      button.color {position: relative; left: -192px; width: 100px; top: 19px;}
+      #colors { display: flex; width: 100%;}
+      div.color { width: 100% }
+      label.color { display: block; text-align:center; position: relative; top: 34px; font-weight: bold; text-transform: uppercase; }
+      label.color.white { color: white; } label.color.dark { color: black; }
+      button.color { display: block; margin: 0 10px; width: calc(100% - 20px); height: 20px }
+      input.color { margin: 0 10px; width: calc(100% - 20px); height: 50px}
     </style>
   </head>
   <body>
@@ -46,11 +47,12 @@
       <label>Number of colors: <input type="number" name="nb" id="nb" value="5" max="10" min="2"/></label>
       <div id="colors"></div>
     </form>
-    <h2 style="background:#d2fbd0;color:#0d5f07">2. Associate the following colors</h2>
+    <h2 class="ok">2. Associate the following colors</h2>
     <div id="keep"></div>
-    <h2 style="background:#fbd0da;color:#5f071c">3. Avoid to associate the following colors</h2>
+    <h2 class="ko">3. Avoid to associate the following colors</h2>
     <div id="drop"></div>
     <script>
+      var luminanceThreshold = 0.3;
       function getColorComposite(rgb, index) {
         if(rgb.charAt(0)=='#') rgb = rgb.substring(1);
         var r = parseInt(rgb.substring(index, index + 2), 16) / 255;
@@ -95,21 +97,26 @@
         return Math.floor(Math.random() * (max - min + 1) + min)
       }
       function generateRandomColor() {
-        var r = randomIntFromInterval(0, 255).toString(16);
-        var g = randomIntFromInterval(0, 255).toString(16);
-        var b = randomIntFromInterval(0, 255).toString(16);
+        var r = randomIntFromInterval(0, 255).toString(16); if(r.length==1)r='0'+r;
+        var g = randomIntFromInterval(0, 255).toString(16); if(g.length==1)g='0'+g;
+        var b = randomIntFromInterval(0, 255).toString(16); if(b.length==1)b='0'+b;
         return '#'+r+g+b;
       }
       function onColorChanged(event) {
         var item = event.srcElement;
-        document.querySelector('label[for='+item.getAttribute('id')+']').innerHTML = item.value;
+        var label = document.querySelector('label[for='+item.getAttribute('id')+']');
+        var color = item.value;
+        label.innerHTML = color;
+        label.setAttribute('class', 'color '+(getRelativeLuminance(color)>luminanceThreshold ? 'dark' : 'white'));
         updateHash();
       }
       function onButtonClicked(event) {
         var item = event.srcElement;
         var color = generateRandomColor();
         document.getElementById(item.getAttribute('data-input')).value = color;
-        document.querySelector('label[for='+item.getAttribute('data-input')+']').innerHTML = color;
+        var label = document.querySelector('label[for='+item.getAttribute('data-input')+']');
+        label.innerHTML = color;
+        label.setAttribute('class', 'color '+(getRelativeLuminance(color)>luminanceThreshold ? 'dark' : 'white'));
         updateHash();
       }
       function updateHash() {
@@ -121,6 +128,9 @@
         updateContrastChecker();
       }
       function addNewColorInput(color, nb) {
+        var div = document.createElement('div');
+        div.setAttribute('class', 'color');
+        div.setAttribute('data-input', 'color'+nb);
         var input = document.createElement('input');
         input.setAttribute('type', 'color');
         input.setAttribute('name', 'color'+nb);
@@ -131,28 +141,28 @@
         var label = document.createElement('label');
         label.setAttribute('for', 'color'+nb);
         label.innerHTML = color;
-        label.setAttribute('class', 'color white');
-        if(getRelativeLuminance(color)>0.7) label.setAttribute('class', 'color dark');
+        label.setAttribute('class', 'color '+(getRelativeLuminance(color)>luminanceThreshold ? 'dark' : 'white'));
         var button = document.createElement('button');
         button.setAttribute('data-input', 'color'+nb);
         button.setAttribute('class', 'color');
         button.innerHTML = 'Random';
         button.addEventListener('click', onButtonClicked);
-        document.querySelector('#colors').append(input);
-        document.querySelector('#colors').append(label);
-        document.querySelector('#colors').append(button);
+        div.append(label);
+        div.append(input);
+        div.append(button);
+        document.querySelector('#colors').append(div);
       }
       function onNumberColorsChanged(){
-        var nb = document.querySelectorAll('#colors .color').length;
-        var newNb = this.value*3;
+        var nb = document.querySelectorAll('#colors>div.color').length;
+        var newNb = this.value;
         while(nb>newNb) {
-          document.querySelector('#colors').removeChild(document.querySelectorAll('#colors .color')[nb-1]);
-          nb = document.querySelectorAll('#colors .color').length;
+          document.querySelector('#colors').removeChild(document.querySelectorAll('#colors>div.color')[nb-1]);
+          nb = document.querySelectorAll('#colors>div.color').length;
         }
         while(nb<newNb) {
           var color = generateRandomColor();
           addNewColorInput(color, nb);
-          nb = document.querySelectorAll('#colors .color').length;
+          nb = document.querySelectorAll('#colors>div.color').length;
         }
         updateHash();
       }
@@ -207,7 +217,7 @@
         }
         document.querySelector('#nb').addEventListener('change', onNumberColorsChanged);
         updateContrastChecker();
-        document.getElementById('nb').dispatchEvent(new Event("change"));
+        //document.getElementById('nb').dispatchEvent(new Event("change"));
       });
     </script>
   </body>
