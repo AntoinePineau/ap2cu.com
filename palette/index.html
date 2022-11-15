@@ -17,38 +17,45 @@
     <meta name="theme-color" content="#ffffff">
     <link rel="stylesheet" href="/css/home.css"/>
     <style>
-      html, body { margin: 0 20px; font-family: Verdana, Tahoma, sans-serif;}
-      span.color { min-width:256px; padding: 10px; margin: 5px; text-transform: capitalize; border: solid 2px; }
-      table.colors tr:nth-child(2) { border: solid 2px black; display: flex; width: fit-content; font-size: 12px; margin:-7px 6px 10px; width:calc(100% - 15px) }
+      html, body { margin: 0 1%; font-family: Verdana, Tahoma, sans-serif;}
+      span.color { padding: .5rem; margin: .25rem; text-transform: capitalize; border: solid 2px; }
+      table.colors tr:nth-child(2) { border: solid .1rem black; display: flex; width: fit-content; font-size: .6rem; margin:-7px 6px 10px; width:calc(100% - .75rem) }
       table.colors[data-rating="5"] tr:nth-child(2), .ok { background: #d2fbd0; color: #0d5f07}
       table.colors[data-rating="4"] tr:nth-child(2) { background: #d2fbd0; color: #0d5f07}
       table.colors[data-rating="3"] tr:nth-child(2) { background: #fbf5d0; color: #5f5207}
       table.colors[data-rating="2"] tr:nth-child(2) { background: #fbd0da; color: #5f071c}
       table.colors[data-rating="1"] tr:nth-child(2), .ko { background: #fbd0da; color: #5f071c}
       table.colors { float: left } td { display: flex }
-      td.contrast { display: block; font-weight: bold; font-size: 20px; margin: 5px; width: 50% }
-      td.contrast span { font-size: 28px }
-      td.accessibility { display: block; font-weight: bold; font-size: 16px; margin: 5px; text-align: right;width: 50% }
-      h2 { clear: both; padding-top: 20px; text-align: left; }
-      h3 { font-size: 32px; text-transform: uppercase; text-align: center; }
-      #colors { display: flex; width: 100%;} div.color { width: 100% }
-      label.color { font-size: 20px; display: block; text-align:center; position: relative; top: 50px; font-weight: bold; text-transform: uppercase; }
+      td.contrast { display: block; font-weight: bold; font-size: 1rem; margin: .25rem; width: 50% }
+      td.contrast span { font-size: 1.4rem }
+      td.accessibility { display: block; font-weight: bold; font-size: .8rem; margin: .25rem; text-align: right;width: 50% }
+      h2 { clear: both; padding: 1%; text-align: left; }
+      h3 { font-size: 1.6rem; text-transform: uppercase; text-align: center; }
+      #colors { display: flex; width: 100%; } div.color { width: 100% }
+      label.color { font-size: 1rem; display: block; text-align:center; position: relative; top: 2.5rem; font-weight: bold; text-transform: uppercase; }
       label.color.white { color: white; } label.color.dark { color: black; }
-      button.color { display: block; height: 20px } input.color { height: 80px}
-      button.color, input.color { margin: 0 5px; width: calc(100% - 10px) }
+      button.color { display: block; height: 1.2rem } input.color { height: 4rem}
+      button.color, input.color { margin: 0 .25rem; width: calc(100% - .5rem) }
+      @media only screen and (max-width: 1024px) {
+        #colors { display: inline-block; columns: 2 }
+      }
     </style>
   </head>
   <body>
-    <h1>Find a WCAG AAA accessible color palette</h1>
-    <h2>1. Choose your colors</h2>
-    <form action="javascript:void(0)">
-      <label>Number of colors: <input type="number" name="nb" id="nb" value="5" max="10" min="2"/></label>
-      <div id="colors"></div>
-    </form>
-    <h2 class="ok">2. Associate the following colors</h2>
-    <div id="keep"></div>
-    <h2 class="ko">3. Avoid to associate the following colors</h2>
-    <div id="drop"></div>
+    <header>
+      <h1>Find a WCAG AAA accessible color palette</h1>
+    </header>
+    <main>
+      <h2>1. Choose your colors</h2>
+      <form action="javascript:void(0)">
+        <label>Number of colors: <input type="number" name="nb" id="nb" value="5" max="10" min="2"/></label>
+        <div id="colors"></div>
+      </form>
+      <h2 class="ok">2. Associate the following colors</h2>
+      <div id="keep"></div>
+      <h2 class="ko">3. Avoid to associate the following colors</h2>
+      <div id="drop"></div>
+    </main>
     <script>
       var luminanceThreshold = 0.3;
       function getColorComposite(rgb, index) {
@@ -205,6 +212,7 @@
         document.querySelector('#keep').innerHTML = keep;
         document.querySelector('#drop').innerHTML = drop;
       }
+      document.querySelector('#nb').addEventListener('change', onNumberColorsChanged);
       document.addEventListener('DOMContentLoaded', function () {
         if(window.location.hash.length>1) {
           var colors = window.location.hash.substring(1).split('-');
@@ -213,9 +221,10 @@
             addNewColorInput('#'+colors[i], i);
           }
         }
-        document.querySelector('#nb').addEventListener('change', onNumberColorsChanged);
+        else {
+          document.getElementById('nb').dispatchEvent(new Event("change"));
+        }
         updateContrastChecker();
-        //document.getElementById('nb').dispatchEvent(new Event("change"));
       });
     </script>
   </body>
