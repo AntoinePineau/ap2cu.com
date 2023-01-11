@@ -1,0 +1,25 @@
+html, body { margin: 0 1%; font-family: Verdana, Tahoma, sans-serif;}
+span.color { padding: .5rem; margin: .25rem; text-transform: capitalize; border: solid 2px; }
+table.colors tr:nth-child(2) { border: solid .1rem black; display: flex; width: fit-content; font-size: .6rem; margin:-7px 6px 10px; width:calc(100% - .75rem) }
+table.colors[data-rating="5"] tr:nth-child(2), .ok { background: #d2fbd0; color: #0d5f07}
+table.colors[data-rating="4"] tr:nth-child(2) { background: #d2fbd0; color: #0d5f07}
+table.colors[data-rating="3"] tr:nth-child(2) { background: #fbf5d0; color: #5f5207}
+table.colors[data-rating="2"] tr:nth-child(2) { background: #fbd0da; color: #5f071c}
+table.colors[data-rating="1"] tr:nth-child(2), .ko { background: #fbd0da; color: #5f071c}
+table.colors { float: left } td { display: flex }
+td.contrast { display: block; font-weight: bold; font-size: 1rem; margin: .25rem; width: 50% }
+td.contrast span { font-size: 1.4rem }
+td.accessibility { display: block; font-weight: bold; font-size: .8rem; margin: .25rem; text-align: right;width: 50% }
+h2 { clear: both; padding: 1%; text-align: left; }
+h3 { font-size: 1.6rem; text-transform: uppercase; text-align: center; }
+#colors { display: flex; width: 100%; } div.color { width: 100%; break-inside: avoid; }
+label.color { font-size: 1rem; display: block; text-align:center; position: relative; top: 2.5rem; font-weight: bold; text-transform: uppercase; }
+label.color.white { color: white; } label.color.dark { color: black; }
+button.color { display: block; height: 1.2rem } input.color { height: 4rem}
+button.color, input.color { margin: 0 .25rem; width: calc(100% - .5rem) }
+@media only screen and (max-width: 1024px) {
+  #colors { display: inline-block; columns: 4 }
+}
+@media only screen and (max-width: 600px) {
+  #colors { display: inline-block; columns: 2 }
+}
