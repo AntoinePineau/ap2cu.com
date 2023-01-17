@@ -1,0 +1,219 @@
+
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-V46RDY9W4Q"></script>
+    <script>window.dataLayer = window.dataLayer || [];function gtag(){dataLayer.push(arguments);}gtag('js', new Date());gtag('config', 'G-V46RDY9W4Q');</script>
+    <title>vi editor syntax and commands</title>
+    <style type="text/css">
+      html, html * { font:12px Courier New; }
+      div { border:solid 1px; padding: 0 10px 10px; margin:2px; background-color:#FCFCFC; }
+      h2 { text-decoration:underline; font-style:italic; font-weight:bold; font-size:13px }
+      .command { font-weight:bold; color:red; }
+      .generic { font-style:italic; }
+      .column { width:30%; }
+      td { vertical-align:top; }
+    </style>
+  </head>
+  <body>
+    <table cellpadding="0" cellspacing="0">
+      <tr>
+        <td class="column">
+        
+          <div id="general-startup">
+            <h2>General Startup</h2>
+            <table>
+              <tr>
+                <td>To use vi:</td>
+                <td class="command">vi <span class="generic command">filename</span></td>
+              </tr>
+              <tr>
+                <td>To exit &amp; save changes:</td>
+                <td><span class="command">ZZ</span> or <span class="command">:wq</span></td>
+              </tr>
+              <tr>
+                <td>To exit without saving changes:</td>
+                <td class="command">:q!</td>
+              </tr>
+              <tr>
+                <td>To save the current file without quitting:</td>
+                <td class="command">:w</td>
+              </tr>
+              <tr>
+                <td>To copy (read) filename after cursor in file currently editing:</td>
+                <td class="command">:r <span class="generic command">filename</span></td>
+              </tr>
+              <tr>
+                <td>To enter vi command mode:</td>
+                <td class="command generic">[esc]</td>
+              </tr>
+            </table>      
+          </div>
+          
+          <div id="line-editor-mode">
+            <h2>Line Editor Mode</h2>
+            <span class="generic">Any commands form the line editor can be issued upon entering line mode.</span><br/><br/> 
+            <table>
+              <tr>
+                <td>To enter:</td>
+                <td>type '<span class="command">:</span>'</td>
+              </tr>
+              <tr>
+                <td>To exit:</td>
+                <td>press <span class="command generic">[return]</span> or <span class="command generic">[esc]</span></td>
+              </tr>
+            </table>     
+          </div>
+          
+          <div id="screen-movement">
+            <h2>Screen Movement</h2>
+            <table>
+              <tr><td class="command">G</td><td>move to the last line in the file</td></tr>
+              <tr><td class="command">xG</td><td>move to line x</td></tr>
+              <tr><td class="command">z+</td><td>move current line to top of screen</td></tr>
+              <tr><td class="command">z</td><td>move current line to the middle of screen</td></tr>
+              <tr><td class="command">z-</td><td>move current line to the bottom of screen</td></tr>
+              <tr><td class="command">^F</td><td>move forward one screen</td></tr>
+              <tr><td class="command">^B</td><td>move backward one line</td></tr>
+              <tr><td class="command">^D</td><td>move forward one half screen</td></tr>
+              <tr><td class="command">^U</td><td>move backward one half screen</td></tr>
+              <tr><td class="command">^R</td><td>redraw screen ( does not work with VT100 type terminals )</td></tr>
+              <tr><td class="command">^L</td><td>redraw screen ( does not work with Televideo terminals )</td></tr>
+            </table>
+          </div>
+          
+          <div id="shell-escape">
+            <h2>Shell Escape</h2>
+              executes '<span class="generic">cmd</span>' as a shell command:<br/>
+              <span class="command">:!<span class="generic command">cmd</span></span>
+          </div>
+          
+            <div id="copying-code">
+              <h2>Copying Code</h2>
+              <table>
+                <tr>
+                  <td class="command">yy</td>
+                  <td>(yank)'copies' line which may then be put by the p(put) command. Precede with a count for multiple lines.</td>
+                </tr>
+              </table>
+            </div>
+          
+        </td>
+        
+        <td class="column">
+        
+          <div id="find-commands">
+            <h2>Find Commands</h2>
+            <table>
+              <tr><td class="command">?</td><td>finds a word going backwards</td></tr>
+              <tr><td class="command">/</td><td>finds a word going forwards</td></tr>
+              <tr><td class="command">f</td><td>finds a character on the line under the cursor going forward</td></tr>
+              <tr><td class="command">F</td><td>finds a character on the line under the cursor going backwards</td></tr>
+              <tr><td class="command">t</td><td>find a character on the current line going forward and stop one character before it</td></tr>
+              <tr><td class="command">T</td><td>find a character on the current line going backward and stop one character before it</td></tr>
+              <tr><td class="command">;</td><td>repeat last f, F, t, T</td></tr>
+            </table>
+            <br/><br/>
+            <span class="command">:%s/<span class="generic command">regex</span>/<span class="generic command">repl</span>/<span class="generic command">flags</span></span> replace
+          </div>
+          
+          <div id="moving">
+            <h2>Moving</h2>
+            <table>
+              <tr>
+                <td class="command">:<span class="generic command">#</span></td>
+                <td>move to line <span class="generic">#</span></td>
+              </tr>
+              <tr>
+                <td class="command">:$</td>
+                <td>move to last line of file</td>
+              </tr>
+            </table>
+          </div>
+          
+          <div id="miscellaneous-commands">
+            <h2>Miscellaneous Commands</h2>
+            <table>
+              <tr><td class="command">.</td><td>repeat last command</td></tr>
+              <tr><td class="command">u</td><td>undoes last command issued</td></tr>
+              <tr><td class="command">U</td><td>undoes all commands on one line</td></tr>
+              <tr><td class="command">xp</td><td>deletes first character and inserts after second (swap)</td></tr>
+              <tr><td class="command">J</td><td>join current line with the next line</td></tr>
+              <tr><td class="command">^G</td><td>display current line number</td></tr>
+              <tr><td class="command">%</td><td>if at one parenthesis, will jump to its mate</td></tr>
+              <tr><td class="command">mx</td><td>mark current line with character x</td></tr>
+              <tr><td class="command">'x</td><td>find line marked with character x</td></tr>
+            </table>
+            <br/><br/>
+            <span class="generic"><h2 style="display:inline">NOTE</h2>: Marks are internal and not written to the file.</span>
+          </div>
+          
+          <div id="put-command">
+            <h2>Put Command</h2>
+            brings back previous deletion or yank of lines, words, or characters<br/><br/>
+            <table>
+              <tr><td class="command">P</td><td>bring back before cursor</td></tr>
+              <tr><td class="command">p</td><td>bring back after cursor</td></tr>
+            </table>
+          </div>
+          
+        </td>
+        <td class="column">
+        
+          <div id="cursor-movement">
+            <h2>Cursor Movement</h2>
+            <table>
+              <tr><td class="command">h</td><td>move left (backspace)</td></tr>
+              <tr><td class="command">j</td><td>move down</td></tr>
+              <tr><td class="command">k</td><td>move up</td></tr>
+              <tr><td class="command">l</td><td>move right (spacebar)</td></tr>
+              <tr><td class="command generic">[return]</td><td>move to the beginning of the next line</td></tr>
+              <tr><td class="command">$</td><td>last column on the current line</td></tr>
+              <tr><td class="command">0</td><td>move cursor to the first column on the current line</td></tr>
+              <tr><td class="command">^</td><td>move cursor to first nonblank column on the current line</td></tr>
+              <tr><td class="command">w</td><td>move to the beginning of the next word or punctuation mark</td></tr>
+              <tr><td class="command">W</td><td>move past the next space</td></tr>
+              <tr><td class="command">b</td><td>move to the beginning of the previous word or punctuation mark</td></tr>
+              <tr><td class="command">B</td><td>move to the beginning of the previous word, ignores punctuation</td></tr>
+              <tr><td class="command">e</td><td>end of next word or punctuation mark</td></tr>
+              <tr><td class="command">E</td><td>end of next word, ignoring punctuation</td></tr>
+              <tr><td class="command">H</td><td>move cursor to the top of the screen </td></tr>
+              <tr><td class="command">M</td><td>move cursor to the middle of the screen</td></tr>
+              <tr><td class="command">L</td><td>move cursor to the bottom of the screen </td></tr>
+            </table>
+          </div>
+          
+          <div id="inserting">
+            <h2>Inserting</h2>
+            <table>
+              <tr><td class="command">r</td><td>replace character under cursor with next character typed</td></tr>
+              <tr><td class="command">R</td><td>keep replacing character until <span class="generic">[esc]</span> is hit</td></tr>
+              <tr><td class="command">i</td><td>insert before cursor</td></tr>
+              <tr><td class="command">a</td><td>append after cursor</td></tr>
+              <tr><td class="command">A</td><td>append at end of line</td></tr>
+              <tr><td class="command">O</td><td>open line above cursor and enter append mode</td></tr>
+            </table>
+          </div>
+          
+          <div id="deleting">
+            <h2>Deleting</h2>
+            <table>
+              <tr><td class="command">x</td><td>delete character under cursor</td></tr>
+              <tr><td class="command">dd</td><td>delete line under cursor</td></tr>
+              <tr><td class="command">dw</td><td>delete word under cursor</td></tr>
+              <tr><td class="command">db</td><td>delete word before cursor</td></tr>
+            </table>
+          </div>
+          
+          <div id="counts">
+            <h2>Counts</h2>
+            A number preceding any vi command tells vi to repeat that command many times.     
+          </div>
+          
+        </td>
+      </tr>
+    </table>
+  </body>
+</html>
