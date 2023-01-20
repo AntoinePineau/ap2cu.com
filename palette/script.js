@@ -134,7 +134,7 @@ function updateContrastChecker() {
       html += '  </span>\n';
       html += '  <span class="color" style="background:#'+c2+'">\n';
       html += '    <h3>#'+rgb2+'</h3>\n';
-      html += '    Relative L½"½"uminance: <span title="'+l2+'">'+Math.round(l2*10000000)/10000000+'</span>';
+      html += '    Relative Luminance: <span title="'+l2+'">'+Math.round(l2*10000000)/10000000+'</span>';
       html += '  </span>\n';
       html += '</td></tr>\n';
       html += '<tr>\n';
