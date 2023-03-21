@@ -1,5 +1,6 @@
+Object.prototype.$=function(s){let e=this instanceof Element?this:document;return Array.from(e.querySelectorAll(s))}
 var luminanceThreshold = 0.3;
-if(this.wcag===undefined) wcag = 'AAA';
+var wcag = 'AAA';
 function getColorComposite(rgb, index) {
   if(rgb.charAt(0)=='#') rgb = rgb.substring(1);
   var r = parseInt(rgb.substring(index, index + 2), 16) / 255;
@@ -41,12 +42,15 @@ function getRating(contrast) {
   return 1;
 }
 function randomIntFromInterval(min, max) { // min and max included 
-  return Math.floor(Math.random() * (max - min + 1) + min)
+  var n = Math.floor(Math.random() * (max - min + 1) + min);
+  n = n.toString(16);
+  if(n.length==1) n = '0'+n;
+  return n;
 }
 function generateRandomColor() {
-  var r = randomIntFromInterval(0, 255).toString(16); if(r.length==1)r='0'+r;
-  var g = randomIntFromInterval(0, 255).toString(16); if(g.length==1)g='0'+g;
-  var b = randomIntFromInterval(0, 255).toString(16); if(b.length==1)b='0'+b;
+  var r = randomIntFromInterval(0, 255);
+  var g = randomIntFromInterval(0, 255);
+  var b = randomIntFromInterval(0, 255);
   return '#'+r+g+b;
 }
 function onColorChanged(event) {
@@ -99,6 +103,9 @@ function addNewColorInput(color, nb) {
   div.append(button);
   document.querySelector('#colors').append(div);
 }
+function changeInputValue() {
+  this.attributes.class.value = 'n'+this.value;
+}
 function onNumberColorsChanged(){
   var nb = document.querySelectorAll('#colors>div.color').length;
   var newNb = this.value;
@@ -150,17 +157,21 @@ function updateContrastChecker() {
   document.querySelector('#keep').innerHTML = keep;
   document.querySelector('#drop').innerHTML = drop;
 }
-document.querySelector('#nb').addEventListener('change', onNumberColorsChanged);
 document.addEventListener('DOMContentLoaded', function () {
+  $('input[type=radio]').forEach(r=>{r.addEventListener('change',function(){wcag=this.value;updateContrastChecker()})})
+  let nb = document.getElementById('nb');
   if(window.location.hash.length>1) {
     var colors = window.location.hash.substring(1).split('-');
-    document.querySelector('#nb').value = colors.length;
+    nb.classList.add('n'+colors.length);
+    nb.addEventListener('input', changeInputValue)
+    nb.addEventListener('change', onNumberColorsChanged);
+    nb.value = colors.length;
     for(i=0;i<colors.length;i++) {
       addNewColorInput('#'+colors[i], i);
     }
   }
   else {
-    document.getElementById('nb').dispatchEvent(new Event("change"));
+    nb.dispatchEvent(new Event("change"));
   }
   updateContrastChecker();
 });

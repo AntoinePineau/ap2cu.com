@@ -15,24 +15,34 @@
     <meta name="msapplication-TileColor" content="#000000">
     <meta name="msapplication-config" content="/img/browserconfig.xml">
     <meta name="theme-color" content="#ffffff">
-    <link rel="stylesheet" href="/css/home.css"/>
     <link rel="stylesheet" href="/palette/style.css"/>
   </head>
   <body>
     <header>
-      <h1>Find a WCAG AAA accessible color palette</h1>
-    </header>
-    <main>
-      <h2>1. Choose your colors</h2>
+      <h1>Find a WCAG AA or AAA accessible color palette</h1>
       <form action="javascript:void(0)">
-        <label>Number of colors: <input type="number" name="nb" id="nb" value="5" max="10" min="2"/></label>
-        <div id="colors"></div>
+        <div>
+          <h2 id="criteria">WCAG Criteria</h2>
+          <label><input type="radio" name="crit" value="AA"/> AA</label>
+          <label><input type="radio" name="crit" value="AAA" checked/> AAA</label>
+        </div>
+        <div>
+          <h2 id="nbColors">Number of colors</h2>
+          <input type="range" id="nb" name="nb" id="nb" value="5" max="9" min="2"/>
+          <div id="colors"></div>
+      </div>
       </form>
-      <h2 class="ok">2. Associate the following colors</h2>
-      <div id="keep"></div>
-      <h2 class="ko">3. Avoid to associate the following colors</h2>
-      <div id="drop"></div>
+    </header>
+    <span class="sep"></span>
+    <main>
+      <details open>
+        <summary>Associate the following colors</summary>
+        <div id="keep"></div>
+      </details>
+      <details>
+        <summary>Avoid to associate the following colors</summary>
+        <div id="drop"></div>
+      </details>
     </main>
     <script src="/palette/script.js"></script>
-  </body>
 </html>
