@@ -104,11 +104,16 @@ function addNewColorInput(color, nb) {
   document.querySelector('#colors').append(div);
 }
 function changeInputValue() {
-  this.attributes.class.value = 'n'+this.value;
+  try {
+    this.attributes.class.value = 'n'+this.value;
+  }
+  catch(e) {
+    document.getElementById('nb').classList.add('n'+document.getElementById('nb').value)
+  }
 }
 function onNumberColorsChanged(){
   var nb = document.querySelectorAll('#colors>div.color').length;
-  var newNb = this.value;
+  var newNb = this.value || document.getElementById('nb').value;
   while(nb>newNb) {
     document.querySelector('#colors').removeChild(document.querySelectorAll('#colors>div.color')[nb-1]);
     nb = document.querySelectorAll('#colors>div.color').length;
@@ -160,18 +165,19 @@ function updateContrastChecker() {
 document.addEventListener('DOMContentLoaded', function () {
   $('input[type=radio]').forEach(r=>{r.addEventListener('change',function(){wcag=this.value;updateContrastChecker()})})
   let nb = document.getElementById('nb');
+  nb.addEventListener('input', changeInputValue)
+  nb.addEventListener('change', onNumberColorsChanged);
   if(window.location.hash.length>1) {
     var colors = window.location.hash.substring(1).split('-');
     nb.classList.add('n'+colors.length);
-    nb.addEventListener('input', changeInputValue)
-    nb.addEventListener('change', onNumberColorsChanged);
     nb.value = colors.length;
     for(i=0;i<colors.length;i++) {
       addNewColorInput('#'+colors[i], i);
     }
   }
   else {
-    nb.dispatchEvent(new Event("change"));
+    changeInputValue();
+    onNumberColorsChanged();
   }
   updateContrastChecker();
 });
