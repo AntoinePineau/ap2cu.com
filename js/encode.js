@@ -238,7 +238,7 @@ function binaryencode(text) {
 }
 
 function binarydecode(text) {
-  return document.querySelector('#decoded').value = binary2decoded(text);
+  return document.querySelector('#decoded').value = binary2decode(text);
 }
 
 
@@ -250,7 +250,7 @@ function dnaencode(text) {
     var binary = v.match(/.{1,2}/g).join('#').split('#');
     for(l=0;l<binary.length;l++) {
       var b = binary[l];
-      dna += b == '00' ? 'A' : b == '11' ? 'T' : b == '01' ? 'C' : 'G';
+      dna += b == '00' ? 'A' : b == '11' ? 'T' : b == '01' ? 'G' : 'C';
     }
     dna += ' ';
   }
@@ -281,7 +281,7 @@ function dna2binary(text) {
   for(i=0;i<dna.length;i++) {
     for(j=0;j<dna[i].length;j++) {
       var n = dna[i][j];
-      str += n == 'A' ? '00' : n == 'T' ? '11' : n == 'C' ? '01' : '10';
+      str += n == 'A' ? '00' : n == 'T' ? '11' : n == 'G' ? '01' : '10';
     }
     str += ' ';
   }
