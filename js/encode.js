@@ -22,6 +22,8 @@ function update(id, textarea) {
       unicodeencode(decodedText);
       byteencode(decodedText);
       hexencode(decodedText);
+      binaryencode(decodedText);
+      dnaencode(decodedText);
       document.querySelector('#sha1encoded').value = SHA1(decodedText);
       document.querySelector('#sha256encoded').value = sha256(decodedText);
       document.querySelector('#md5encoded').value = md5(decodedText);
@@ -33,6 +35,8 @@ function update(id, textarea) {
       unicodeencode(decodedText);
       byteencode(decodedText);
       hexencode(decodedText);
+      binaryencode(decodedText);
+      dnaencode(decodedText);
       document.querySelector('#sha1encoded').value = SHA1(decodedText);
       document.querySelector('#sha256encoded').value = sha256(decodedText);
       document.querySelector('#md5encoded').value = md5(decodedText);
@@ -44,6 +48,8 @@ function update(id, textarea) {
       unicodeencode(decodedText);
       byteencode(decodedText);
       hexencode(decodedText);
+      binaryencode(decodedText);
+      dnaencode(decodedText);
       document.querySelector('#sha1encoded').value = SHA1(decodedText);
       document.querySelector('#sha256encoded').value = sha256(decodedText);
       document.querySelector('#md5encoded').value = md5(decodedText);
@@ -55,6 +61,8 @@ function update(id, textarea) {
       unicodeencode(decodedText);
       byteencode(decodedText);
       hexencode(decodedText);
+      binaryencode(decodedText);
+      dnaencode(decodedText);
       document.querySelector('#sha1encoded').value = SHA1(decodedText);
       document.querySelector('#sha256encoded').value = sha256(decodedText);
       document.querySelector('#md5encoded').value = md5(decodedText);
@@ -66,6 +74,8 @@ function update(id, textarea) {
       htmlentitiesencode(decodedText);
       byteencode(decodedText);
       hexencode(decodedText);
+      binaryencode(decodedText);
+      dnaencode(decodedText);
       document.querySelector('#sha1encoded').value = SHA1(decodedText);
       document.querySelector('#sha256encoded').value = sha256(decodedText);
       document.querySelector('#md5encoded').value = md5(decodedText);
@@ -77,6 +87,8 @@ function update(id, textarea) {
       unicodeencode(decodedText);
       htmlentitiesencode(decodedText);
       hexencode(decodedText);
+      binaryencode(decodedText);
+      dnaencode(decodedText);
       document.querySelector('#sha1encoded').value = SHA1(decodedText);
       document.querySelector('#sha256encoded').value = sha256(decodedText);
       document.querySelector('#md5encoded').value = md5(decodedText);
@@ -88,6 +100,34 @@ function update(id, textarea) {
       unicodeencode(decodedText);
       htmlentitiesencode(decodedText);
       byteencode(decodedText);
+      binaryencode(decodedText);
+      dnaencode(decodedText);
+      document.querySelector('#sha1encoded').value = SHA1(decodedText);
+      document.querySelector('#sha256encoded').value = sha256(decodedText);
+      document.querySelector('#md5encoded').value = md5(decodedText);
+      break;
+    case 'binaryencoded':
+      var decodedText = binarydecode(textarea.value);
+      urlencode(decodedText);
+      base64encode(decodedText);
+      unicodeencode(decodedText);
+      htmlentitiesencode(decodedText);
+      byteencode(decodedText);
+      hexencode(decodedText);
+      dnaencode(decodedText);
+      document.querySelector('#sha1encoded').value = SHA1(decodedText);
+      document.querySelector('#sha256encoded').value = sha256(decodedText);
+      document.querySelector('#md5encoded').value = md5(decodedText);
+      break;
+    case 'dnaencoded':
+      var decodedText = dnadecode(textarea.value);
+      urlencode(decodedText);
+      base64encode(decodedText);
+      unicodeencode(decodedText);
+      htmlentitiesencode(decodedText);
+      byteencode(decodedText);
+      hexencode(decodedText);
+      binaryencode(decodedText);
       document.querySelector('#sha1encoded').value = SHA1(decodedText);
       document.querySelector('#sha256encoded').value = sha256(decodedText);
       document.querySelector('#md5encoded').value = md5(decodedText);
@@ -185,6 +225,67 @@ function bytedecode(text) {
   for(i=0;i<bytes.length;i++)
     str += String.fromCodePoint(bytes[i]);
   return document.querySelector('#decoded').value = str;
+}
+
+function binaryencode(text) {
+  var binary = '';
+  for(i=0;i<text.length;i++) {
+    var b = text.codePointAt(i).toString(2);
+    if(b.length<8) b = '0'+b;
+    binary += b+' ';
+  }
+  return document.querySelector('#binaryencoded').value = binary;
+}
+
+function binarydecode(text) {
+  return document.querySelector('#decoded').value = binary2decoded(text);
+}
+
+
+function dnaencode(text) {
+  var dna = '';
+  for(i=0;i<text.length;i++) {
+    var v = text.codePointAt(i).toString(2);
+    if(v.length<8) v = '0'+v;
+    var binary = v.match(/.{1,2}/g).join('#').split('#');
+    for(l=0;l<binary.length;l++) {
+      var b = binary[l];
+      dna += b == '00' ? 'A' : b == '11' ? 'T' : b == '01' ? 'C' : 'G';
+    }
+    dna += ' ';
+  }
+  return document.querySelector('#dnaencoded').value = dna;
+}
+
+function dnadecode(text) {
+  return document.querySelector('#decoded').value = binary2decode(dna2binary(text));
+}
+
+function binary2decode(text) {
+  var str = '';
+  var bytes = text.trim().split(' ');
+  for(i=0;i<bytes.length;i++) {
+    var codePoint = 0;
+    for(c=0;c<bytes[i].length;c++) {
+      var bit = parseInt(bytes[i][c]);
+      if(bit==1) codePoint += 2**(bytes[i].length - c - 1);
+    }
+    str += String.fromCodePoint(codePoint);
+  }
+  return str;
+}
+
+function dna2binary(text) {
+  var str = '';
+  var dna = text.trim().split(' ');
+  for(i=0;i<dna.length;i++) {
+    for(j=0;j<dna[i].length;j++) {
+      var n = dna[i][j];
+      str += n == 'A' ? '00' : n == 'T' ? '11' : n == 'C' ? '01' : '10';
+    }
+    str += ' ';
+  }
+  return str;
 }
 
 function hexencode(text) {
