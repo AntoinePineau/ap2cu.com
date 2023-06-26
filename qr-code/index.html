@@ -88,10 +88,7 @@
           text += "\nTEL;TYPE=WORK,FAX:"+get('fax').replaceAll('[^+0-9]', '');
           text += "\nORG;CHARSET=utf-8:"+get('company');
           text += "\nEND:VCARD";
-
-          const imgElement = document.createElement('img');
-          imgElement.src = 'https://quickchart.io/qr?size=400&centerImageUrl=https://ap2cu.com/img/logo.png&text='+encodeURIComponent(text);
-          document.getElementById('qrcode').appendChild(imgElement);
+          document.getElementById('qrcode').innerHTML = '<img src="https://quickchart.io/qr?size=400&centerImageUrl=https://ap2cu.com/img/logo.png&text='+encodeURIComponent(text)+'">';
         })
       })
     </script>
