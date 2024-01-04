@@ -1,4 +1,6 @@
 var id = 1;
+var clickedElement = null;
+
 document.addEventListener('DOMContentLoaded', function () {
     document.querySelectorAll('textarea,input').forEach(function(t) {
       var id = t.getAttribute('id');
@@ -6,11 +8,17 @@ document.addEventListener('DOMContentLoaded', function () {
     });
     addTest(true);
 
+    
+    document.addEventListener('click', function (event) {
+      // Track the element that was clicked
+      clickedElement = event.target;
+    });
     window.addEventListener('beforeunload', function (event) {
-      // Your logic here
-      var confirmationMessage = 'Are you sure you want to leave?';
-      (event || window.event).returnValue = confirmationMessage; // Standard
-      return confirmationMessage; // Some browsers
+      if(!clickedElement || clickedElement.tagName === 'A' && new URL(clickedElement.href).hostame != this.window.location.hostname) {
+        var confirmationMessage = 'Are you sure you want to leave?';
+        (event || window.event).returnValue = confirmationMessage;
+        return confirmationMessage;
+      }
     });
   }, false);
 
