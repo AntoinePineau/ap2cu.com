@@ -14,7 +14,7 @@ document.addEventListener('DOMContentLoaded', function () {
       clickedElement = event.target;
     });
     window.addEventListener('beforeunload', function (event) {
-      if(!clickedElement || clickedElement.tagName === 'A' && new URL(clickedElement.href).hostame != this.window.location.hostname) {
+      if(!clickedElement || clickedElement.tagName === 'A' && new URL(clickedElement.href).hostname != this.window.location.hostname) {
         var confirmationMessage = 'Are you sure you want to leave?';
         (event || window.event).returnValue = confirmationMessage;
         return confirmationMessage;
