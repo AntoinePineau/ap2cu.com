@@ -1,5 +1,5 @@
 var id = 1;
-var clickedElement = null;
+var exitSite = true;
 
 document.addEventListener('DOMContentLoaded', function () {
     document.querySelectorAll('textarea,input').forEach(function(t) {
@@ -10,11 +10,10 @@ document.addEventListener('DOMContentLoaded', function () {
 
     
     document.addEventListener('click', function (event) {
-      // Track the element that was clicked
-      clickedElement = event.target;
+      exitSite = event.target.tagName === 'A' && new URL(event.target.href).hostname != this.window.location.hostname
     });
     window.addEventListener('beforeunload', function (event) {
-      if(!clickedElement || clickedElement.tagName === 'A' && new URL(clickedElement.href).hostname != this.window.location.hostname) {
+      if(exitSite) {
         var confirmationMessage = 'Are you sure you want to leave?';
         (event || window.event).returnValue = confirmationMessage;
         return confirmationMessage;
