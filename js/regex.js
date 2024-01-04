@@ -8,7 +8,7 @@ function trackNavigation() {
 }
 function confirmLeaving() {  
   var confirmationMessage = 'Voulez-vous lancer le site en pop-up ?';
-  window.open('https://ap2cu.com/regex', '_blank');
+  window.open('https://ap2cu.com/regex', '_blank',"left=100,top=100,width=320,height=320");
   (event || window.event).returnValue = confirmationMessage;
   return confirmationMessage;
 }
