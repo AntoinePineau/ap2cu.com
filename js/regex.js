@@ -8,7 +8,7 @@ function trackNavigation() {
 }
 function confirmLeaving() {  
   var confirmationMessage = 'Are you sure you want to leave?';
-  if(confirm(confirmLeaving)) {
+  if(confirm(confirmationMessage)) {
     console.log('bye bye');
     return true;
   }
