@@ -10,7 +10,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
     
     document.addEventListener('click', function (event) {
-      exitSite = event.target.tagName === 'A' && new URL(event.target.href).hostname != this.window.location.hostname
+      exitSite = event.target.tagName === 'A' && new URL(event.target.href).hostname != window.location.hostname
     });
     window.addEventListener('beforeunload', function (event) {
       if(exitSite) {
