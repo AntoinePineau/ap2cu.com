@@ -34,6 +34,7 @@ document.addEventListener('DOMContentLoaded', function () {
         confirmLeaving();
       }
     });
+    trackNavigation();
   }, false);
 
 function testRegex() {
