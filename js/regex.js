@@ -1,5 +1,16 @@
 var id = 1;
-var exitSite = true;
+
+var exitSite = true, stateNav = 'currentPage';
+
+function trackNavigation() {
+  var currentState = { from: stateNav };
+  history.pushState(currentState, '');
+}
+function confirmLeaving() {  
+  var confirmationMessage = 'Are you sure you want to leave?';
+  (event || window.event).returnValue = confirmationMessage;
+  return confirmationMessage;
+}
 
 document.addEventListener('DOMContentLoaded', function () {
     document.querySelectorAll('textarea,input').forEach(function(t) {
@@ -14,9 +25,13 @@ document.addEventListener('DOMContentLoaded', function () {
     });
     window.addEventListener('beforeunload', function (event) {
       if(exitSite) {
-        var confirmationMessage = 'Are you sure you want to leave?';
-        (event || window.event).returnValue = confirmationMessage;
-        return confirmationMessage;
+        confirmLeaving()
+      }
+    });
+    window.addEventListener('popstate', function(event) {
+      if (event.state && event.state.from === stateNav) {
+        // This is a back event
+        confirmLeaving();
       }
     });
   }, false);
