@@ -8,8 +8,11 @@ function trackNavigation() {
 }
 function confirmLeaving() {  
   var confirmationMessage = 'Are you sure you want to leave?';
-  (event || window.event).returnValue = confirmationMessage;
-  return confirmationMessage;
+  if(confirm(confirmLeaving)) {
+    console.log('bye bye');
+    return true;
+  }
+  return false;
 }
 
 document.addEventListener('DOMContentLoaded', function () {
