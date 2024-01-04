@@ -5,6 +5,13 @@ document.addEventListener('DOMContentLoaded', function () {
       document.querySelector('label[for="'+id+'"]').innerText = t.getAttribute('placeholder');
     });
     addTest(true);
+
+    window.addEventListener('beforeunload', function (event) {
+      // Your logic here
+      var confirmationMessage = 'Are you sure you want to leave?';
+      (event || window.event).returnValue = confirmationMessage; // Standard
+      return confirmationMessage; // Some browsers
+    });
   }, false);
 
 function testRegex() {
