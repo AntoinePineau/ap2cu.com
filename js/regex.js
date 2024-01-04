@@ -7,12 +7,9 @@ function trackNavigation() {
   history.pushState(currentState, '');
 }
 function confirmLeaving() {  
-  var confirmationMessage = 'Are you sure you want to leave?';
-  if(confirm(confirmationMessage)) {
-    console.log('bye bye');
-    return true;
-  }
-  return false;
+  var confirmationMessage = 'Voulez-vous lancer le site en pop-up ?';
+  (event || window.event).returnValue = confirmationMessage;
+  return confirmationMessage;
 }
 
 document.addEventListener('DOMContentLoaded', function () {
