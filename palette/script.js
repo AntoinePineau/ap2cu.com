@@ -631,44 +631,72 @@ function getValidPairsFromKeepSection() {
   const validPairs = [];
   const keepSection = document.querySelector('#keep');
   
-  if (!keepSection) return validPairs;
+  if (!keepSection) {
+    console.log('Keep section not found');
+    return validPairs;
+  }
+  
+  console.log('Keep section HTML:', keepSection.innerHTML.substring(0, 500));
   
   // Parse les tables de couleurs validées
   const colorTables = keepSection.querySelectorAll('table.colors');
+  console.log('Found color tables:', colorTables.length);
   
-  colorTables.forEach(table => {
+  colorTables.forEach((table, index) => {
+    console.log(`Table ${index}:`, table.outerHTML.substring(0, 200));
+    
     const colorSpans = table.querySelectorAll('span.color');
+    console.log(`Table ${index} has ${colorSpans.length} color spans`);
+    
     if (colorSpans.length >= 2) {
-      // Extrait les couleurs des styles background
+      // Examine la structure réelle des spans
+      colorSpans.forEach((span, spanIndex) => {
+        console.log(`Span ${spanIndex}:`, span.outerHTML);
+        console.log(`Style: ${span.getAttribute('style')}`);
+      });
+      
+      // Extrait les couleurs des styles background  
       const firstSpan = colorSpans[0];
       const secondSpan = colorSpans[1];
       
       const bgStyle1 = firstSpan.getAttribute('style');
       const bgStyle2 = secondSpan.getAttribute('style');
       
+      console.log('Style 1:', bgStyle1);
+      console.log('Style 2:', bgStyle2);
+      
       // Parse les couleurs des styles
-      const bg1Match = bgStyle1.match(/background:#([0-9a-fA-F]{6})/);
-      const text1Match = bgStyle1.match(/color:#([0-9a-fA-F]{6})/);
-      const bg2Match = bgStyle2.match(/background:#([0-9a-fA-F]{6})/);
-      const text2Match = bgStyle2.match(/color:#([0-9a-fA-F]{6})/);
+      const bg1Match = bgStyle1 ? bgStyle1.match(/background:#([0-9a-fA-F]{6})/i) : null;
+      const text1Match = bgStyle1 ? bgStyle1.match(/color:#([0-9a-fA-F]{6})/i) : null;
+      const bg2Match = bgStyle2 ? bgStyle2.match(/background:#([0-9a-fA-F]{6})/i) : null;
+      const text2Match = bgStyle2 ? bgStyle2.match(/color:#([0-9a-fA-F]{6})/i) : null;
+      
+      console.log('Matches found:', {bg1Match, text1Match, bg2Match, text2Match});
       
       if (bg1Match && text1Match) {
-        validPairs.push({
-          background: '#' + bg1Match[1],
-          text: '#' + text1Match[1],
+        const pair = {
+          background: '#' + bg1Match[1].toUpperCase(),
+          text: '#' + text1Match[1].toUpperCase(),
           ratio: getContrastRatio('#' + bg1Match[1], '#' + text1Match[1])
-        });
+        };
+        validPairs.push(pair);
+        console.log('Added pair 1:', pair);
       }
       
       if (bg2Match && text2Match) {
-        validPairs.push({
-          background: '#' + bg2Match[1],
-          text: '#' + text2Match[1],
+        const pair = {
+          background: '#' + bg2Match[1].toUpperCase(),
+          text: '#' + text2Match[1].toUpperCase(),
           ratio: getContrastRatio('#' + bg2Match[1], '#' + text2Match[1])
-        });
+        };
+        validPairs.push(pair);
+        console.log('Added pair 2:', pair);
       }
     }
   });
+  
+  console.log('Total valid pairs found:', validPairs.length);
+  console.log('Valid pairs:', validPairs);
   
   return validPairs.sort((a, b) => b.ratio - a.ratio);
 }
