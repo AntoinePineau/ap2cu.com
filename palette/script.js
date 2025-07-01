@@ -722,9 +722,9 @@ function getColorUsageRecommendations(colors, sector, style) {
         hoverText: safePair(3).text
       },
       secondary: {
-        background: 'transparent',
-        text: lightBgPair.text, // Utilise la couleur qui fonctionne avec le fond principal
-        border: lightBgPair.text,
+        background: safePair(4).background, // Fond visible au lieu de transparent
+        text: safePair(4).text,
+        border: safePair(4).background,
         hover: safePair(5).background,
         hoverText: safePair(5).text
       }
@@ -741,8 +741,11 @@ function getColorUsageRecommendations(colors, sector, style) {
     },
     backgrounds: {
       main: lightBgPair.background,
-      alternate: safePair(11).background,
-      accent: safePair(11).background
+      mainText: lightBgPair.text,
+      alternate: safePair(6).background,  // Différent du main
+      alternateText: safePair(6).text,
+      accent: safePair(7).background,      // Différent des deux autres
+      accentText: safePair(7).text
     },
     accent: safePair(4).text,
     allColorsUsed: `Toutes les couleurs utilisées: ${Array.from(allColorsUsed).join(', ')}`,
@@ -806,15 +809,15 @@ function generateColorUsageGuide() {
     
     <div class="usage-category">
       <h4>🔘 Buttons</h4>
-      <div style="padding: 15px; background: ${usage.backgrounds.main}; border-radius: 5px; margin: 10px 0;">
+      <div style="padding: 15px; background: ${usage.backgrounds.main}; color: ${usage.backgrounds.mainText}; border-radius: 5px; margin: 10px 0;">
         <button onmouseover="this.style.background='${usage.buttons.primary.hover}'; this.style.color='${usage.buttons.primary.hoverText}'" 
                 onmouseout="this.style.background='${usage.buttons.primary.background}'; this.style.color='${usage.buttons.primary.text}'"
                 style="background: ${usage.buttons.primary.background}; color: ${usage.buttons.primary.text}; border: none; padding: 10px 20px; border-radius: 5px; margin-right: 10px; cursor: pointer; transition: all 0.3s;">Primary Button</button>
         <button onmouseover="this.style.background='${usage.buttons.secondary.hover}'; this.style.color='${usage.buttons.secondary.hoverText}'" 
-                onmouseout="this.style.background='transparent'; this.style.color='${usage.buttons.secondary.text}'"
-                style="background: transparent; color: ${usage.buttons.secondary.text}; border: 2px solid ${usage.buttons.secondary.border}; padding: 8px 18px; border-radius: 5px; cursor: pointer; transition: all 0.3s;">Secondary Button</button>
-        <div style="font-size: 0.8em; margin-top: 8px; color: ${usage.text.secondary};">
-          Primary: ${usage.buttons.primary.background} → ${usage.buttons.primary.hover} • Secondary: ${usage.buttons.secondary.text} → ${usage.buttons.secondary.hover}
+                onmouseout="this.style.background='${usage.buttons.secondary.background}'; this.style.color='${usage.buttons.secondary.text}'"
+                style="background: ${usage.buttons.secondary.background}; color: ${usage.buttons.secondary.text}; border: 2px solid ${usage.buttons.secondary.border}; padding: 8px 18px; border-radius: 5px; cursor: pointer; transition: all 0.3s;">Secondary Button</button>
+        <div style="font-size: 0.8em; margin-top: 8px; color: ${usage.backgrounds.mainText};">
+          Primary: ${usage.buttons.primary.background} → ${usage.buttons.primary.hover} • Secondary: ${usage.buttons.secondary.background} → ${usage.buttons.secondary.hover}
         </div>
       </div>
     </div>
@@ -834,14 +837,14 @@ function generateColorUsageGuide() {
     <div class="usage-category">
       <h4>🎨 Backgrounds & Sections</h4>
       <div style="margin: 10px 0;">
-        <div style="background: ${usage.backgrounds.main}; padding: 15px; border-radius: 5px; margin-bottom: 5px;">
-          <strong>Main Background</strong> (${usage.backgrounds.main})
+        <div style="background: ${usage.backgrounds.main}; color: ${usage.backgrounds.mainText}; padding: 15px; border-radius: 5px; margin-bottom: 5px;">
+          <strong>Main Background</strong> (${usage.backgrounds.main} • Text: ${usage.backgrounds.mainText})
         </div>
-        <div style="background: ${usage.backgrounds.alternate}; padding: 15px; border-radius: 5px; margin-bottom: 5px;">
-          <strong>Alternate Section</strong> (${usage.backgrounds.alternate})
+        <div style="background: ${usage.backgrounds.alternate}; color: ${usage.backgrounds.alternateText}; padding: 15px; border-radius: 5px; margin-bottom: 5px;">
+          <strong>Alternate Section</strong> (${usage.backgrounds.alternate} • Text: ${usage.backgrounds.alternateText})
         </div>
-        <div style="background: ${usage.backgrounds.accent}; padding: 15px; border-radius: 5px;">
-          <strong>Accent Highlight</strong> (${usage.backgrounds.accent})
+        <div style="background: ${usage.backgrounds.accent}; color: ${usage.backgrounds.accentText}; padding: 15px; border-radius: 5px;">
+          <strong>Accent Highlight</strong> (${usage.backgrounds.accent} • Text: ${usage.backgrounds.accentText})
         </div>
       </div>
     </div>
