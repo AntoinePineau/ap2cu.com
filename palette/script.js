@@ -703,6 +703,13 @@ function getColorUsageRecommendations(colors, sector, style) {
     return validPairs[index] || fallback;
   }
   
+  // Trouve une paire pour bouton qui ne soit PAS la même que le fond principal
+  function findButtonPair(exclude) {
+    return validPairs.find(pair => 
+      pair.background.toUpperCase() !== exclude.background.toUpperCase()
+    ) || validPairs[0];
+  }
+  
   const usageGuide = {
     headers: {
       background: safePair(0).background,
@@ -715,19 +722,40 @@ function getColorUsageRecommendations(colors, sector, style) {
       description: `Navigation: ${Math.round(safePair(1).ratio * 100) / 100}`
     },
     buttons: {
-      primary: {
-        background: safePair(2).background,
-        text: safePair(2).text,
-        hover: safePair(3).background,
-        hoverText: safePair(3).text
-      },
-      secondary: {
-        background: safePair(4).background, // Fond visible au lieu de transparent
-        text: safePair(4).text,
-        border: safePair(4).background,
-        hover: safePair(5).background,
-        hoverText: safePair(5).text
-      }
+      primary: (() => {
+        const buttonPair = findButtonPair(lightBgPair);
+        const hoverPair = validPairs.find(p => 
+          p.background !== buttonPair.background && p.background !== lightBgPair.background
+        ) || safePair(1);
+        return {
+          background: buttonPair.background,
+          text: buttonPair.text,
+          hover: hoverPair.background,
+          hoverText: hoverPair.text
+        };
+      })(),
+      secondary: (() => {
+        const usedColors = [lightBgPair.background];
+        const primaryButton = findButtonPair(lightBgPair);
+        usedColors.push(primaryButton.background);
+        
+        const secondaryPair = validPairs.find(p => 
+          !usedColors.includes(p.background.toUpperCase())
+        ) || safePair(2);
+        
+        const hoverPair = validPairs.find(p => 
+          !usedColors.includes(p.background.toUpperCase()) && 
+          p.background !== secondaryPair.background
+        ) || safePair(3);
+        
+        return {
+          background: secondaryPair.background,
+          text: secondaryPair.text,
+          border: secondaryPair.background,
+          hover: hoverPair.background,
+          hoverText: hoverPair.text
+        };
+      })()
     },
     links: {
       normal: lightBgPair.text, // Couleur qui fonctionne sur le fond principal
