@@ -19,22 +19,85 @@
   </head>
   <body>
     <header>
-      <h1>WCAG accessible color palette generator</h1>
+      <h1>Brand Identity Generator</h1>
       <form action="javascript:void(0)">
-        <div>
+        <div class="form-section">
           <h2 id="criteria">WCAG Criteria</h2>
           <label><input type="radio" name="crit" value="AA"/> AA</label>
           <label><input type="radio" name="crit" value="AAA" checked/> AAA</label>
         </div>
-        <div>
+        <div class="form-section">
           <h2 id="nbColors">Number of colors</h2>
-          <input type="range" id="nb" name="nb" id="nb" value="5" max="9" min="2"/>
+          <input type="range" id="nb" name="nb" value="5" max="9" min="2"/>
+          <button type="button" id="generate-palette">Generate Harmonious Palette</button>
+          <p class="lock-hint">💡 Click the lock icon (🔒) on any color to keep it fixed during generation</p>
           <div id="colors"></div>
-      </div>
+        </div>
+        <div class="form-section brand-context">
+          <h2>Brand context (for typography & logo suggestions)</h2>
+          <div class="context-inputs">
+            <div class="input-group">
+              <label for="sector">Business Sector</label>
+              <select id="sector" name="sector">
+                <option value="">Select a sector</option>
+                <option value="technology">Technology</option>
+                <option value="healthcare">Healthcare</option>
+                <option value="finance">Finance</option>
+                <option value="education">Education</option>
+                <option value="food">Food & Beverage</option>
+                <option value="fashion">Fashion</option>
+                <option value="real-estate">Real Estate</option>
+                <option value="creative">Creative & Arts</option>
+                <option value="travel">Travel & Tourism</option>
+                <option value="sports">Sports & Fitness</option>
+                <option value="beauty">Beauty & Wellness</option>
+                <option value="automotive">Automotive</option>
+                <option value="concierge">Concierge Services</option>
+                <option value="consulting">Consulting</option>
+                <option value="hospitality">Hospitality</option>
+                <option value="legal">Legal Services</option>
+                <option value="retail">Retail</option>
+                <option value="construction">Construction</option>
+                <option value="entertainment">Entertainment</option>
+                <option value="nonprofit">Non-Profit</option>
+              </select>
+            </div>
+            <div class="input-group">
+              <label for="style">Website Style</label>
+              <select id="style" name="style">
+                <option value="">Select a style</option>
+                <option value="modern">Modern & Minimalist</option>
+                <option value="corporate">Professional & Corporate</option>
+                <option value="creative">Creative & Artistic</option>
+                <option value="playful">Playful & Fun</option>
+                <option value="elegant">Elegant & Sophisticated</option>
+                <option value="bold">Bold & Dynamic</option>
+                <option value="natural">Natural & Organic</option>
+                <option value="vintage">Vintage & Retro</option>
+                <option value="luxury">Luxury & Premium</option>
+                <option value="friendly">Friendly & Approachable</option>
+              </select>
+            </div>
+          </div>
+        </div>
       </form>
     </header>
     <span class="sep"></span>
     <main>
+      <section id="brand-recommendations" style="display:none;">
+        <details>
+          <summary>Recommended Typography</summary>
+          <div class="recommendation-content">
+            <div id="font-suggestions"></div>
+          </div>
+        </details>
+        <details>
+          <summary>Logo Concepts & Icons</summary>
+          <div class="recommendation-content">
+            <div id="logo-suggestions"></div>
+          </div>
+        </details>
+      </section>
       <details open>
         <summary>Associate the following colors</summary>
         <div id="keep"></div>
