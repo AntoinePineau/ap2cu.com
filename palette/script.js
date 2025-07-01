@@ -778,9 +778,9 @@ function getColorUsageRecommendations(colors, sector, style) {
       visited: safePair(2).text // Autre alternative validée
     },
     text: {
-      primary: lightBgPair.text,
-      secondary: safePair(9).text,
-      muted: safePair(10).text
+      primary: lightBgPair.text,      // Couleur validée pour le fond principal
+      secondary: lightBgPair.text,    // Même couleur validée (différent style visuel)
+      muted: lightBgPair.text         // Même couleur validée (opacité réduite)
     },
     backgrounds: {
       main: lightBgPair.background,
@@ -868,11 +868,11 @@ function generateColorUsageGuide() {
     <div class="usage-category">
       <h4>📝 Text Hierarchy</h4>
       <div style="padding: 15px; background: ${usage.backgrounds.main}; border-radius: 5px; margin: 10px 0;">
-        <h3 style="color: ${usage.text.primary}; margin: 0 0 8px 0;">Primary Text (Headings)</h3>
-        <p style="color: ${usage.text.secondary}; margin: 0 0 8px 0;">Secondary text for body content and descriptions</p>
-        <p style="color: ${usage.text.muted}; margin: 0; font-size: 0.9em;">Muted text for footnotes and less important information</p>
-        <div style="font-size: 0.8em; margin-top: 8px; color: ${usage.text.muted};">
-          Primary: ${usage.text.primary} • Secondary: ${usage.text.secondary} • Muted: ${usage.text.muted}
+        <h3 style="color: ${usage.text.primary}; margin: 0 0 8px 0; font-weight: bold;">Primary Text (Headings)</h3>
+        <p style="color: ${usage.text.secondary}; margin: 0 0 8px 0; opacity: 0.8;">Secondary text for body content and descriptions</p>
+        <p style="color: ${usage.text.muted}; margin: 0; font-size: 0.9em; opacity: 0.6;">Muted text for footnotes and less important information</p>
+        <div style="font-size: 0.8em; margin-top: 8px; color: ${usage.text.primary}; opacity: 0.7;">
+          Toutes les variations utilisent ${usage.text.primary} avec différentes opacités
         </div>
       </div>
     </div>
