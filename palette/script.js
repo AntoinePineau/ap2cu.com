@@ -703,11 +703,19 @@ function getColorUsageRecommendations(colors, sector, style) {
     return validPairs[index] || fallback;
   }
   
-  // Trouve une paire pour bouton qui ne soit PAS la même que le fond principal
-  function findButtonPair(exclude) {
+  // Trouve une paire complète (bg+text) qui ne conflicte pas avec le fond principal
+  function findValidButtonPair(excludeBg) {
     return validPairs.find(pair => 
-      pair.background.toUpperCase() !== exclude.background.toUpperCase()
+      pair.background.toUpperCase() !== excludeBg.toUpperCase()
     ) || validPairs[0];
+  }
+  
+  // Vérifie qu'une paire complète existe dans les validations
+  function isPairValid(background, text) {
+    return validPairs.some(pair => 
+      pair.background.toUpperCase() === background.toUpperCase() && 
+      pair.text.toUpperCase() === text.toUpperCase()
+    );
   }
   
   const usageGuide = {
@@ -723,10 +731,15 @@ function getColorUsageRecommendations(colors, sector, style) {
     },
     buttons: {
       primary: (() => {
-        const buttonPair = findButtonPair(lightBgPair);
+        // Utilise la première paire qui n'est pas le fond principal
+        const buttonPair = findValidButtonPair(lightBgPair.background);
+        
+        // Pour le hover, trouve une autre paire valide différente
         const hoverPair = validPairs.find(p => 
-          p.background !== buttonPair.background && p.background !== lightBgPair.background
-        ) || safePair(1);
+          p.background !== buttonPair.background && 
+          p.background !== lightBgPair.background
+        ) || validPairs[1];
+        
         return {
           background: buttonPair.background,
           text: buttonPair.text,
@@ -735,18 +748,20 @@ function getColorUsageRecommendations(colors, sector, style) {
         };
       })(),
       secondary: (() => {
-        const usedColors = [lightBgPair.background];
-        const primaryButton = findButtonPair(lightBgPair);
-        usedColors.push(primaryButton.background);
+        const primaryButton = findValidButtonPair(lightBgPair.background);
         
+        // Trouve une paire différente du fond principal ET du bouton primaire
         const secondaryPair = validPairs.find(p => 
-          !usedColors.includes(p.background.toUpperCase())
-        ) || safePair(2);
+          p.background !== lightBgPair.background && 
+          p.background !== primaryButton.background
+        ) || validPairs[1];
         
+        // Hover : encore une autre paire
         const hoverPair = validPairs.find(p => 
-          !usedColors.includes(p.background.toUpperCase()) && 
+          p.background !== lightBgPair.background && 
+          p.background !== primaryButton.background && 
           p.background !== secondaryPair.background
-        ) || safePair(3);
+        ) || validPairs[2];
         
         return {
           background: secondaryPair.background,
