@@ -513,16 +513,28 @@ const logoSuggestions = {
   ]
 };
 
-function getFontFallbacks(category) {
+function getFontFallbacks(category, fontName) {
   const fallbackMap = {
-    'Sans-serif': "'Helvetica Neue', Helvetica, Arial, 'Segoe UI', 'Roboto', sans-serif",
-    'Serif': "'Times New Roman', Times, 'Georgia', 'Merriweather', serif",
-    'Monospace': "'Courier New', Courier, 'Monaco', 'Consolas', monospace",
-    'Display': "'Arial Black', 'Helvetica Neue', Helvetica, Arial, sans-serif",
-    'Handwritten': "'Comic Sans MS', cursive, sans-serif"
+    'Sans-serif': ['Helvetica Neue', 'Helvetica', 'Arial', 'Segoe UI', 'Roboto', 'sans-serif'],
+    'Serif': ['Times New Roman', 'Times', 'Georgia', 'Merriweather', 'serif'],
+    'Monospace': ['Courier New', 'Courier', 'Monaco', 'Consolas', 'monospace'],
+    'Display': ['Arial Black', 'Helvetica Neue', 'Helvetica', 'Arial', 'sans-serif'],
+    'Handwritten': ['Comic Sans MS', 'cursive', 'sans-serif']
   };
   
-  return fallbackMap[category] || fallbackMap['Sans-serif'];
+  const baseFallbacks = fallbackMap[category] || fallbackMap['Sans-serif'];
+  
+  // Supprime la police principale pour éviter les doublons
+  const uniqueFallbacks = baseFallbacks.filter(fallback => 
+    fallback.toLowerCase() !== fontName.toLowerCase()
+  );
+  
+  // Reconstitue la chaîne CSS avec quotes appropriées
+  return uniqueFallbacks.map(font => 
+    font.includes(' ') && !['sans-serif', 'serif', 'monospace', 'cursive'].includes(font) 
+      ? `'${font}'` 
+      : font
+  ).join(', ');
 }
 
 const styleBasedFonts = {
@@ -581,12 +593,21 @@ const styleBasedFonts = {
 function getColorUsageRecommendations(colors, sector, style) {
   if (!colors.length) return '';
   
+  // Utilise TOUTES les couleurs de la palette
   const primaryColor = colors[0];
   const secondaryColor = colors[1] || colors[0];
   const accentColor = colors[2] || colors[1] || colors[0];
-  const neutralColor = colors.length > 3 ? colors[3] : '#FFFFFF';
-  const darkColor = colors.find(c => getRelativeLuminance(c) < 0.3) || colors[0];
-  const lightColor = colors.find(c => getRelativeLuminance(c) > 0.7) || '#FFFFFF';
+  const neutralColor = colors[3] || colors[2] || colors[0];
+  const tertiaryColor = colors[4] || colors[3] || colors[1];
+  const quaternaryColor = colors[5] || colors[4] || colors[2];
+  
+  // Trouve la couleur la plus sombre et la plus claire DANS LA PALETTE
+  const darkColor = colors.reduce((darkest, current) => 
+    getRelativeLuminance(current) < getRelativeLuminance(darkest) ? current : darkest
+  );
+  const lightColor = colors.reduce((lightest, current) => 
+    getRelativeLuminance(current) > getRelativeLuminance(lightest) ? current : lightest
+  );
   
   const usageGuide = {
     headers: {
@@ -603,29 +624,31 @@ function getColorUsageRecommendations(colors, sector, style) {
       primary: {
         background: primaryColor,
         text: getRelativeLuminance(primaryColor) > 0.5 ? darkColor : lightColor,
-        hover: adjustColorBrightness(primaryColor, -20)
+        hover: secondaryColor,
+        hoverText: getRelativeLuminance(secondaryColor) > 0.5 ? darkColor : lightColor
       },
       secondary: {
         background: 'transparent',
-        text: primaryColor,
-        border: primaryColor,
-        hover: primaryColor
+        text: accentColor,
+        border: accentColor,
+        hover: accentColor,
+        hoverText: getRelativeLuminance(accentColor) > 0.5 ? darkColor : lightColor
       }
     },
     links: {
-      normal: primaryColor,
-      hover: adjustColorBrightness(primaryColor, -15),
-      visited: adjustColorBrightness(primaryColor, 15)
+      normal: accentColor,
+      hover: tertiaryColor,
+      visited: quaternaryColor
     },
     text: {
       primary: darkColor,
-      secondary: adjustColorBrightness(darkColor, 30),
-      muted: adjustColorBrightness(darkColor, 50)
+      secondary: neutralColor,
+      muted: tertiaryColor
     },
     backgrounds: {
       main: lightColor,
-      alternate: adjustColorBrightness(lightColor, -5),
-      accent: adjustColorBrightness(accentColor, 80)
+      alternate: neutralColor,
+      accent: tertiaryColor
     },
     accent: accentColor
   };
@@ -679,10 +702,14 @@ function generateColorUsageGuide() {
     <div class="usage-category">
       <h4>🔘 Buttons</h4>
       <div style="padding: 15px; background: ${usage.backgrounds.main}; border-radius: 5px; margin: 10px 0;">
-        <button style="background: ${usage.buttons.primary.background}; color: ${usage.buttons.primary.text}; border: none; padding: 10px 20px; border-radius: 5px; margin-right: 10px; cursor: pointer;">Primary Button</button>
-        <button style="background: ${usage.buttons.secondary.background}; color: ${usage.buttons.secondary.text}; border: 2px solid ${usage.buttons.secondary.border}; padding: 8px 18px; border-radius: 5px; cursor: pointer;">Secondary Button</button>
+        <button onmouseover="this.style.background='${usage.buttons.primary.hover}'; this.style.color='${usage.buttons.primary.hoverText}'" 
+                onmouseout="this.style.background='${usage.buttons.primary.background}'; this.style.color='${usage.buttons.primary.text}'"
+                style="background: ${usage.buttons.primary.background}; color: ${usage.buttons.primary.text}; border: none; padding: 10px 20px; border-radius: 5px; margin-right: 10px; cursor: pointer; transition: all 0.3s;">Primary Button</button>
+        <button onmouseover="this.style.background='${usage.buttons.secondary.hover}'; this.style.color='${usage.buttons.secondary.hoverText}'" 
+                onmouseout="this.style.background='transparent'; this.style.color='${usage.buttons.secondary.text}'"
+                style="background: transparent; color: ${usage.buttons.secondary.text}; border: 2px solid ${usage.buttons.secondary.border}; padding: 8px 18px; border-radius: 5px; cursor: pointer; transition: all 0.3s;">Secondary Button</button>
         <div style="font-size: 0.8em; margin-top: 8px; color: ${usage.text.secondary};">
-          Primary: ${usage.buttons.primary.background} • Secondary: border ${usage.buttons.secondary.border}
+          Primary: ${usage.buttons.primary.background} → ${usage.buttons.primary.hover} • Secondary: ${usage.buttons.secondary.text} → ${usage.buttons.secondary.hover}
         </div>
       </div>
     </div>
@@ -742,7 +769,7 @@ function generateBrandRecommendations() {
   }
   
   fontContainer.innerHTML = fonts.map(font => {
-    const fallbacks = getFontFallbacks(font.category);
+    const fallbacks = getFontFallbacks(font.category, font.name);
     return `
     <div class="font-suggestion">
       <h4>${font.name} (${font.category})</h4>
