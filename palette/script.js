@@ -590,67 +590,96 @@ const styleBasedFonts = {
   ]
 };
 
+function findGoodColorPairs(colors) {
+  const goodPairs = [];
+  const minRatio = wcag === 'AAA' ? 7 : 4.5;
+  
+  for (let i = 0; i < colors.length; i++) {
+    for (let j = 0; j < colors.length; j++) {
+      if (i !== j) {
+        const ratio = getContrastRatio(colors[i], colors[j]);
+        if (ratio >= minRatio) {
+          goodPairs.push({
+            background: colors[i],
+            text: colors[j],
+            ratio: ratio
+          });
+        }
+      }
+    }
+  }
+  
+  return goodPairs.sort((a, b) => b.ratio - a.ratio);
+}
+
 function getColorUsageRecommendations(colors, sector, style) {
   if (!colors.length) return '';
   
-  // Utilise TOUTES les couleurs de la palette
-  const primaryColor = colors[0];
-  const secondaryColor = colors[1] || colors[0];
-  const accentColor = colors[2] || colors[1] || colors[0];
-  const neutralColor = colors[3] || colors[2] || colors[0];
-  const tertiaryColor = colors[4] || colors[3] || colors[1];
-  const quaternaryColor = colors[5] || colors[4] || colors[2];
+  // Trouve les associations qui respectent WCAG
+  const goodPairs = findGoodColorPairs(colors);
   
-  // Trouve la couleur la plus sombre et la plus claire DANS LA PALETTE
-  const darkColor = colors.reduce((darkest, current) => 
-    getRelativeLuminance(current) < getRelativeLuminance(darkest) ? current : darkest
-  );
-  const lightColor = colors.reduce((lightest, current) => 
-    getRelativeLuminance(current) > getRelativeLuminance(lightest) ? current : lightest
-  );
+  // Utilise TOUTES les couleurs disponibles
+  const allColors = {
+    color1: colors[0] || '#000000',
+    color2: colors[1] || colors[0],
+    color3: colors[2] || colors[0], 
+    color4: colors[3] || colors[0],
+    color5: colors[4] || colors[0],
+    color6: colors[5] || colors[0]
+  };
+  
+  // Trouve les meilleures paires pour chaque usage
+  const headerPair = goodPairs[0] || { background: allColors.color1, text: allColors.color2 };
+  const buttonPair = goodPairs[1] || goodPairs[0] || { background: allColors.color2, text: allColors.color1 };
+  const navPair = goodPairs[2] || goodPairs[0] || { background: allColors.color3, text: allColors.color1 };
+  
+  // Trouve une couleur de fond claire acceptable
+  const lightBgPair = goodPairs.find(pair => getRelativeLuminance(pair.background) > 0.7) || 
+                      { background: allColors.color6, text: allColors.color1 };
   
   const usageGuide = {
     headers: {
-      background: primaryColor,
-      text: getRelativeLuminance(primaryColor) > 0.5 ? darkColor : lightColor,
-      description: 'Main brand color for maximum impact'
+      background: headerPair.background,
+      text: headerPair.text,
+      description: `Best contrast ratio: ${Math.round(headerPair.ratio * 100) / 100}`
     },
     navigation: {
-      background: secondaryColor,
-      text: getRelativeLuminance(secondaryColor) > 0.5 ? darkColor : lightColor,
-      description: 'Secondary color for navigation elements'
+      background: navPair.background,
+      text: navPair.text,
+      description: `Navigation with good contrast: ${Math.round(navPair.ratio * 100) / 100}`
     },
     buttons: {
       primary: {
-        background: primaryColor,
-        text: getRelativeLuminance(primaryColor) > 0.5 ? darkColor : lightColor,
-        hover: secondaryColor,
-        hoverText: getRelativeLuminance(secondaryColor) > 0.5 ? darkColor : lightColor
+        background: buttonPair.background,
+        text: buttonPair.text,
+        hover: goodPairs[3] ? goodPairs[3].background : buttonPair.text,
+        hoverText: goodPairs[3] ? goodPairs[3].text : buttonPair.background
       },
       secondary: {
         background: 'transparent',
-        text: accentColor,
-        border: accentColor,
-        hover: accentColor,
-        hoverText: getRelativeLuminance(accentColor) > 0.5 ? darkColor : lightColor
+        text: goodPairs[4] ? goodPairs[4].text : allColors.color3,
+        border: goodPairs[4] ? goodPairs[4].text : allColors.color3,
+        hover: goodPairs[4] ? goodPairs[4].background : allColors.color4,
+        hoverText: goodPairs[4] ? goodPairs[4].text : allColors.color1
       }
     },
     links: {
-      normal: accentColor,
-      hover: tertiaryColor,
-      visited: quaternaryColor
+      normal: goodPairs[5] ? goodPairs[5].text : allColors.color2,
+      hover: goodPairs[6] ? goodPairs[6].text : allColors.color3,
+      visited: goodPairs[7] ? goodPairs[7].text : allColors.color4
     },
     text: {
-      primary: darkColor,
-      secondary: neutralColor,
-      muted: tertiaryColor
+      primary: lightBgPair.text,
+      secondary: goodPairs[8] ? goodPairs[8].text : allColors.color5,
+      muted: goodPairs[9] ? goodPairs[9].text : allColors.color6
     },
     backgrounds: {
-      main: lightColor,
-      alternate: neutralColor,
-      accent: tertiaryColor
+      main: lightBgPair.background,
+      alternate: goodPairs[10] ? goodPairs[10].background : allColors.color5,
+      accent: goodPairs[11] ? goodPairs[11].background : allColors.color6
     },
-    accent: accentColor
+    accent: allColors.color2,
+    allColorsUsed: `Utilise les 6 couleurs: ${Object.values(allColors).join(', ')}`
   };
   
   return usageGuide;
@@ -678,6 +707,11 @@ function generateColorUsageGuide() {
   const container = document.getElementById('color-usage-suggestions');
   
   container.innerHTML = `
+    <div class="usage-category">
+      <h4>📊 Palette Coverage</h4>
+      <p style="font-size: 0.9em; background: #f0f0f0; padding: 10px; border-radius: 5px;">${usage.allColorsUsed}</p>
+    </div>
+    
     <div class="usage-category">
       <h4>🎯 Headers & Titles</h4>
       <div class="color-demo" style="background: ${usage.headers.background}; color: ${usage.headers.text}; padding: 15px; border-radius: 5px; margin: 10px 0;">
