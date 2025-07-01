@@ -513,6 +513,18 @@ const logoSuggestions = {
   ]
 };
 
+function getFontFallbacks(category) {
+  const fallbackMap = {
+    'Sans-serif': "'Helvetica Neue', Helvetica, Arial, 'Segoe UI', 'Roboto', sans-serif",
+    'Serif': "'Times New Roman', Times, 'Georgia', 'Merriweather', serif",
+    'Monospace': "'Courier New', Courier, 'Monaco', 'Consolas', monospace",
+    'Display': "'Arial Black', 'Helvetica Neue', Helvetica, Arial, sans-serif",
+    'Handwritten': "'Comic Sans MS', cursive, sans-serif"
+  };
+  
+  return fallbackMap[category] || fallbackMap['Sans-serif'];
+}
+
 const styleBasedFonts = {
   modern: [
     { name: 'Inter', category: 'Sans-serif', description: 'Ultra-modern, clean geometric design' },
@@ -566,6 +578,152 @@ const styleBasedFonts = {
   ]
 };
 
+function getColorUsageRecommendations(colors, sector, style) {
+  if (!colors.length) return '';
+  
+  const primaryColor = colors[0];
+  const secondaryColor = colors[1] || colors[0];
+  const accentColor = colors[2] || colors[1] || colors[0];
+  const neutralColor = colors.length > 3 ? colors[3] : '#FFFFFF';
+  const darkColor = colors.find(c => getRelativeLuminance(c) < 0.3) || colors[0];
+  const lightColor = colors.find(c => getRelativeLuminance(c) > 0.7) || '#FFFFFF';
+  
+  const usageGuide = {
+    headers: {
+      background: primaryColor,
+      text: getRelativeLuminance(primaryColor) > 0.5 ? darkColor : lightColor,
+      description: 'Main brand color for maximum impact'
+    },
+    navigation: {
+      background: secondaryColor,
+      text: getRelativeLuminance(secondaryColor) > 0.5 ? darkColor : lightColor,
+      description: 'Secondary color for navigation elements'
+    },
+    buttons: {
+      primary: {
+        background: primaryColor,
+        text: getRelativeLuminance(primaryColor) > 0.5 ? darkColor : lightColor,
+        hover: adjustColorBrightness(primaryColor, -20)
+      },
+      secondary: {
+        background: 'transparent',
+        text: primaryColor,
+        border: primaryColor,
+        hover: primaryColor
+      }
+    },
+    links: {
+      normal: primaryColor,
+      hover: adjustColorBrightness(primaryColor, -15),
+      visited: adjustColorBrightness(primaryColor, 15)
+    },
+    text: {
+      primary: darkColor,
+      secondary: adjustColorBrightness(darkColor, 30),
+      muted: adjustColorBrightness(darkColor, 50)
+    },
+    backgrounds: {
+      main: lightColor,
+      alternate: adjustColorBrightness(lightColor, -5),
+      accent: adjustColorBrightness(accentColor, 80)
+    },
+    accent: accentColor
+  };
+  
+  return usageGuide;
+}
+
+function adjustColorBrightness(hex, percent) {
+  const num = parseInt(hex.replace('#', ''), 16);
+  const amt = Math.round(2.55 * percent);
+  const R = (num >> 16) + amt;
+  const G = (num >> 8 & 0x00FF) + amt;
+  const B = (num & 0x0000FF) + amt;
+  return '#' + (0x1000000 + (R < 255 ? R < 1 ? 0 : R : 255) * 0x10000 +
+    (G < 255 ? G < 1 ? 0 : G : 255) * 0x100 + 
+    (B < 255 ? B < 1 ? 0 : B : 255)).toString(16).slice(1);
+}
+
+function generateColorUsageGuide() {
+  const colors = Array.from(document.querySelectorAll('input.color')).map(input => input.value);
+  const sector = document.getElementById('sector').value;
+  const style = document.getElementById('style').value;
+  
+  if (!colors.length) return;
+  
+  const usage = getColorUsageRecommendations(colors, sector, style);
+  const container = document.getElementById('color-usage-suggestions');
+  
+  container.innerHTML = `
+    <div class="usage-category">
+      <h4>🎯 Headers & Titles</h4>
+      <div class="color-demo" style="background: ${usage.headers.background}; color: ${usage.headers.text}; padding: 15px; border-radius: 5px; margin: 10px 0;">
+        <strong>Your Brand Title Here</strong>
+        <div style="font-size: 0.9em; margin-top: 5px;">Background: ${usage.headers.background} • Text: ${usage.headers.text}</div>
+      </div>
+      <p>${usage.headers.description}</p>
+    </div>
+    
+    <div class="usage-category">
+      <h4>🔗 Links & Navigation</h4>
+      <div style="padding: 15px; background: ${usage.backgrounds.main}; border-radius: 5px; margin: 10px 0;">
+        <a href="#" style="color: ${usage.links.normal}; text-decoration: none; margin-right: 20px;">Normal Link</a>
+        <a href="#" style="color: ${usage.links.hover}; text-decoration: underline; margin-right: 20px;">Hover State</a>
+        <a href="#" style="color: ${usage.links.visited}; text-decoration: none;">Visited Link</a>
+        <div style="font-size: 0.8em; margin-top: 8px; color: ${usage.text.secondary};">
+          Normal: ${usage.links.normal} • Hover: ${usage.links.hover} • Visited: ${usage.links.visited}
+        </div>
+      </div>
+    </div>
+    
+    <div class="usage-category">
+      <h4>🔘 Buttons</h4>
+      <div style="padding: 15px; background: ${usage.backgrounds.main}; border-radius: 5px; margin: 10px 0;">
+        <button style="background: ${usage.buttons.primary.background}; color: ${usage.buttons.primary.text}; border: none; padding: 10px 20px; border-radius: 5px; margin-right: 10px; cursor: pointer;">Primary Button</button>
+        <button style="background: ${usage.buttons.secondary.background}; color: ${usage.buttons.secondary.text}; border: 2px solid ${usage.buttons.secondary.border}; padding: 8px 18px; border-radius: 5px; cursor: pointer;">Secondary Button</button>
+        <div style="font-size: 0.8em; margin-top: 8px; color: ${usage.text.secondary};">
+          Primary: ${usage.buttons.primary.background} • Secondary: border ${usage.buttons.secondary.border}
+        </div>
+      </div>
+    </div>
+    
+    <div class="usage-category">
+      <h4>📝 Text Hierarchy</h4>
+      <div style="padding: 15px; background: ${usage.backgrounds.main}; border-radius: 5px; margin: 10px 0;">
+        <h3 style="color: ${usage.text.primary}; margin: 0 0 8px 0;">Primary Text (Headings)</h3>
+        <p style="color: ${usage.text.secondary}; margin: 0 0 8px 0;">Secondary text for body content and descriptions</p>
+        <p style="color: ${usage.text.muted}; margin: 0; font-size: 0.9em;">Muted text for footnotes and less important information</p>
+        <div style="font-size: 0.8em; margin-top: 8px; color: ${usage.text.muted};">
+          Primary: ${usage.text.primary} • Secondary: ${usage.text.secondary} • Muted: ${usage.text.muted}
+        </div>
+      </div>
+    </div>
+    
+    <div class="usage-category">
+      <h4>🎨 Backgrounds & Sections</h4>
+      <div style="margin: 10px 0;">
+        <div style="background: ${usage.backgrounds.main}; padding: 15px; border-radius: 5px; margin-bottom: 5px;">
+          <strong>Main Background</strong> (${usage.backgrounds.main})
+        </div>
+        <div style="background: ${usage.backgrounds.alternate}; padding: 15px; border-radius: 5px; margin-bottom: 5px;">
+          <strong>Alternate Section</strong> (${usage.backgrounds.alternate})
+        </div>
+        <div style="background: ${usage.backgrounds.accent}; padding: 15px; border-radius: 5px;">
+          <strong>Accent Highlight</strong> (${usage.backgrounds.accent})
+        </div>
+      </div>
+    </div>
+    
+    <div class="usage-category">
+      <h4>✨ Accent & Highlights</h4>
+      <div style="padding: 15px; background: ${usage.backgrounds.main}; border-radius: 5px; margin: 10px 0; border-left: 4px solid ${usage.accent};">
+        <div style="color: ${usage.accent}; font-weight: bold;">Accent Color Usage</div>
+        <p style="color: ${usage.text.secondary}; margin: 5px 0 0 0;">Use ${usage.accent} for highlights, badges, and call-to-action elements</p>
+      </div>
+    </div>
+  `;
+}
+
 function generateBrandRecommendations() {
   const sector = document.getElementById('sector').value;
   const style = document.getElementById('style').value;
@@ -583,13 +741,19 @@ function generateBrandRecommendations() {
     fonts = [...fonts.slice(0, 2), ...sectorFonts.slice(0, 1)];
   }
   
-  fontContainer.innerHTML = fonts.map(font => `
+  fontContainer.innerHTML = fonts.map(font => {
+    const fallbacks = getFontFallbacks(font.category);
+    return `
     <div class="font-suggestion">
       <h4>${font.name} (${font.category})</h4>
       <p>${font.description}</p>
-      <div class="font-example" style="font-family: '${font.name}', ${font.category.toLowerCase()};">The quick brown fox jumps over the lazy dog</div>
+      <div class="font-example" style="font-family: '${font.name}', ${fallbacks};">The quick brown fox jumps over the lazy dog</div>
+      <div class="font-fallback" style="font-size: 0.8em; color: #666; margin-top: 5px;">
+        <strong>CSS:</strong> font-family: '${font.name}', ${fallbacks};
+      </div>
     </div>
-  `).join('');
+    `;
+  }).join('');
   
   const logos = logoSuggestions[sector] || logoSuggestions.technology;
   
@@ -615,6 +779,7 @@ function generateBrandRecommendations() {
     </div>
   `).join('');
   
+  generateColorUsageGuide();
   recommendationsSection.style.display = 'block';
 }
 
