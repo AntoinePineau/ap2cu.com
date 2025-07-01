@@ -592,24 +592,39 @@ const styleBasedFonts = {
 
 function findGoodColorPairs(colors) {
   const goodPairs = [];
-  const minRatio = wcag === 'AAA' ? 7 : 4.5;
   
   for (let i = 0; i < colors.length; i++) {
     for (let j = 0; j < colors.length; j++) {
-      if (i !== j) {
+      if (i !== j && isGoodContrast(colors[i], colors[j])) {
         const ratio = getContrastRatio(colors[i], colors[j]);
-        if (ratio >= minRatio) {
-          goodPairs.push({
-            background: colors[i],
-            text: colors[j],
-            ratio: ratio
-          });
-        }
+        goodPairs.push({
+          background: colors[i],
+          text: colors[j],
+          ratio: ratio
+        });
       }
     }
   }
   
   return goodPairs.sort((a, b) => b.ratio - a.ratio);
+}
+
+function getValidColorForText(bgColor, availableColors) {
+  for (const color of availableColors) {
+    if (isGoodContrast(bgColor, color)) {
+      return color;
+    }
+  }
+  return null; // Aucune couleur valide trouvée
+}
+
+function getValidColorForBackground(textColor, availableColors) {
+  for (const color of availableColors) {
+    if (isGoodContrast(color, textColor)) {
+      return color;
+    }
+  }
+  return null; // Aucune couleur valide trouvée
 }
 
 function getColorUsageRecommendations(colors, sector, style) {
@@ -637,49 +652,85 @@ function getColorUsageRecommendations(colors, sector, style) {
   const lightBgPair = goodPairs.find(pair => getRelativeLuminance(pair.background) > 0.7) || 
                       { background: allColors.color6, text: allColors.color1 };
   
+  // Seulement les combinaisons qui passent WCAG
+  const safeHeaderPair = goodPairs[0] || null;
+  const safeButtonPair = goodPairs[1] || goodPairs[0] || null;
+  const safeNavPair = goodPairs[2] || goodPairs[0] || null;
+  
+  // Pour le fond principal, trouve une couleur claire avec bon contraste
+  const lightBgColor = colors.find(c => getRelativeLuminance(c) > 0.7);
+  const mainBgTextColor = lightBgColor ? getValidColorForText(lightBgColor, colors) : null;
+  
   const usageGuide = {
-    headers: {
-      background: headerPair.background,
-      text: headerPair.text,
-      description: `Best contrast ratio: ${Math.round(headerPair.ratio * 100) / 100}`
+    headers: safeHeaderPair ? {
+      background: safeHeaderPair.background,
+      text: safeHeaderPair.text,
+      description: `Contraste sûr: ${Math.round(safeHeaderPair.ratio * 100) / 100}`
+    } : {
+      background: '#000000',
+      text: '#FFFFFF', 
+      description: 'Aucune paire valide dans votre palette'
     },
-    navigation: {
-      background: navPair.background,
-      text: navPair.text,
-      description: `Navigation with good contrast: ${Math.round(navPair.ratio * 100) / 100}`
+    navigation: safeNavPair ? {
+      background: safeNavPair.background,
+      text: safeNavPair.text,
+      description: `Navigation contraste: ${Math.round(safeNavPair.ratio * 100) / 100}`
+    } : {
+      background: '#000000',
+      text: '#FFFFFF',
+      description: 'Fallback - palette insuffisante'
     },
     buttons: {
-      primary: {
-        background: buttonPair.background,
-        text: buttonPair.text,
-        hover: goodPairs[3] ? goodPairs[3].background : buttonPair.text,
-        hoverText: goodPairs[3] ? goodPairs[3].text : buttonPair.background
+      primary: safeButtonPair ? {
+        background: safeButtonPair.background,
+        text: safeButtonPair.text,
+        hover: goodPairs[3] ? goodPairs[3].background : safeButtonPair.text,
+        hoverText: goodPairs[3] ? goodPairs[3].text : safeButtonPair.background
+      } : {
+        background: '#000000',
+        text: '#FFFFFF',
+        hover: '#333333',
+        hoverText: '#FFFFFF'
       },
-      secondary: {
-        background: 'transparent',
-        text: goodPairs[4] ? goodPairs[4].text : allColors.color3,
-        border: goodPairs[4] ? goodPairs[4].text : allColors.color3,
-        hover: goodPairs[4] ? goodPairs[4].background : allColors.color4,
-        hoverText: goodPairs[4] ? goodPairs[4].text : allColors.color1
-      }
+      secondary: (() => {
+        // Trouve une couleur pour bouton transparent qui fonctionne
+        const bgColor = lightBgColor || '#FFFFFF';
+        const validTextColor = getValidColorForText(bgColor, colors);
+        const validHoverBg = validTextColor ? getValidColorForBackground(validTextColor, colors) : null;
+        
+        return validTextColor ? {
+          background: 'transparent',
+          text: validTextColor,
+          border: validTextColor,
+          hover: validHoverBg || validTextColor,
+          hoverText: validHoverBg ? (isGoodContrast(validHoverBg, '#FFFFFF') ? '#FFFFFF' : '#000000') : bgColor
+        } : {
+          background: 'transparent',
+          text: '#000000',
+          border: '#000000',
+          hover: '#000000',
+          hoverText: '#FFFFFF'
+        };
+      })()
     },
     links: {
-      normal: goodPairs[5] ? goodPairs[5].text : allColors.color2,
-      hover: goodPairs[6] ? goodPairs[6].text : allColors.color3,
-      visited: goodPairs[7] ? goodPairs[7].text : allColors.color4
+      normal: goodPairs[4] ? goodPairs[4].text : (getValidColorForText(lightBgColor || '#FFFFFF', colors) || '#0000EE'),
+      hover: goodPairs[5] ? goodPairs[5].text : (goodPairs[4] ? goodPairs[4].background : '#0000AA'),
+      visited: goodPairs[6] ? goodPairs[6].text : '#551A8B'
     },
     text: {
-      primary: lightBgPair.text,
-      secondary: goodPairs[8] ? goodPairs[8].text : allColors.color5,
-      muted: goodPairs[9] ? goodPairs[9].text : allColors.color6
+      primary: mainBgTextColor || '#000000',
+      secondary: goodPairs[7] ? goodPairs[7].text : (mainBgTextColor || '#333333'),
+      muted: goodPairs[8] ? goodPairs[8].text : '#666666'
     },
     backgrounds: {
-      main: lightBgPair.background,
-      alternate: goodPairs[10] ? goodPairs[10].background : allColors.color5,
-      accent: goodPairs[11] ? goodPairs[11].background : allColors.color6
+      main: lightBgColor || '#FFFFFF',
+      alternate: goodPairs[9] ? goodPairs[9].background : '#F5F5F5',
+      accent: goodPairs[10] ? goodPairs[10].background : '#E0E0E0'
     },
-    accent: allColors.color2,
-    allColorsUsed: `Utilise les 6 couleurs: ${Object.values(allColors).join(', ')}`
+    accent: goodPairs[11] ? goodPairs[11].text : allColors.color2,
+    allColorsUsed: `Couleurs valides WCAG trouvées: ${goodPairs.length} paires sur ${colors.length * (colors.length - 1)} possibles`,
+    wcagCompliant: goodPairs.length > 0 ? '✅ Recommandations WCAG compliant' : '⚠️ Palette insuffisante pour WCAG'
   };
   
   return usageGuide;
@@ -708,8 +759,11 @@ function generateColorUsageGuide() {
   
   container.innerHTML = `
     <div class="usage-category">
-      <h4>📊 Palette Coverage</h4>
-      <p style="font-size: 0.9em; background: #f0f0f0; padding: 10px; border-radius: 5px;">${usage.allColorsUsed}</p>
+      <h4>📊 Analyse WCAG</h4>
+      <p style="font-size: 0.9em; background: #f0f0f0; padding: 10px; border-radius: 5px;">
+        ${usage.wcagCompliant}<br>
+        ${usage.allColorsUsed}
+      </p>
     </div>
     
     <div class="usage-category">
