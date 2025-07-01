@@ -729,43 +729,52 @@ function getColorUsageRecommendations(colors, sector, style) {
       text: safePair(1).text,
       description: `Navigation: ${Math.round(safePair(1).ratio * 100) / 100}`
     },
-    buttons: {
-      primary: {
-        background: safePair(2).background,
-        text: safePair(2).text,
-        hover: safePair(3).background,
-        hoverText: safePair(3).text
-      },
-      secondary: {
-        background: safePair(4).background,
-        text: safePair(4).text,
-        border: safePair(4).background,
-        hover: safePair(5).background,
-        hoverText: safePair(5).text
+    buttons: (() => {
+      // S'assurer que le bouton primaire n'a pas le même fond que le fond principal
+      let primaryPair = safePair(2);
+      if (primaryPair.background === lightBgPair.background) {
+        primaryPair = safePair(3); // Essaie la paire suivante
       }
-    },
-    links: (() => {
-      // Trouve des couleurs de texte qui fonctionnent sur le fond principal
-      const linkColor = validPairs.find(p => p.background === lightBgPair.background && p !== lightBgPair)?.text || lightBgPair.text;
-      const hoverColor = validPairs.find(p => p.background === lightBgPair.background && p.text !== linkColor)?.text || safePair(1).text;
-      const visitedColor = validPairs.find(p => p.background === lightBgPair.background && p.text !== linkColor && p.text !== hoverColor)?.text || safePair(2).text;
+      
+      let secondaryPair = safePair(4);
+      if (secondaryPair.background === lightBgPair.background || secondaryPair.background === primaryPair.background) {
+        secondaryPair = safePair(5);
+      }
       
       return {
-        normal: linkColor,
-        hover: hoverColor,
-        visited: visitedColor
+        primary: {
+          background: primaryPair.background,
+          text: primaryPair.text,
+          hover: safePair(6).background,
+          hoverText: safePair(6).text
+        },
+        secondary: {
+          background: secondaryPair.background,
+          text: secondaryPair.text,
+          border: secondaryPair.background,
+          hover: safePair(7).background,
+          hoverText: safePair(7).text
+        }
+      };
+    })(),
+    links: (() => {
+      // Utilise les couleurs de texte des paires qui ont le fond principal comme background
+      const textColorsForMainBg = validPairs.filter(p => p.background === lightBgPair.background).map(p => p.text);
+      
+      return {
+        normal: textColorsForMainBg[0] || lightBgPair.text,
+        hover: textColorsForMainBg[1] || lightBgPair.text,
+        visited: textColorsForMainBg[2] || lightBgPair.text
       };
     })(),
     text: (() => {
-      // Trouve des couleurs de texte validées pour le fond principal
-      const primaryText = lightBgPair.text;
-      const secondaryText = validPairs.find(p => p.background === lightBgPair.background && p.text !== primaryText)?.text || primaryText;
-      const mutedText = validPairs.find(p => p.background === lightBgPair.background && p.text !== primaryText && p.text !== secondaryText)?.text || primaryText;
+      // Utilise les couleurs de texte des paires qui ont le fond principal comme background
+      const textColorsForMainBg = validPairs.filter(p => p.background === lightBgPair.background).map(p => p.text);
       
       return {
-        primary: primaryText,
-        secondary: secondaryText,
-        muted: mutedText
+        primary: textColorsForMainBg[0] || lightBgPair.text,
+        secondary: textColorsForMainBg[1] || lightBgPair.text,
+        muted: textColorsForMainBg[2] || lightBgPair.text
       };
     })(),
     backgrounds: {
